@@ -227,7 +227,7 @@ export default function FacialRecognition({
       {cameraActive && !scanStarted && (
         <button
           onClick={startScan}
-          className="w-full h-12 bg-violet hover:bg-violet/90 text-soft-black font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747] rounded-md transition-transform hover:-translate-y-1">
+          className="w-full h-12 bg-violet hover:bg-violet/90 text-soft-black font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1">
           Lancer le scan
         </button>
       )}
@@ -238,7 +238,7 @@ export default function FacialRecognition({
           onClick={() => {
             window.location.reload();
           }}
-          className="w-full bg-yellow h-12 bg-red hover:bg-red/90 text-red-500 font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747] rounded-md transition-transform hover:-translate-y-1">
+          className="w-full bg-yellow h-12 bg-red hover:bg-red/90 text-red-500 font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1">
           Recommencer
         </button>
       )}

@@ -14,7 +14,7 @@ export default function LoginForm() {
   const [facialScanActive, setFacialScanActive] = useState(false);
 
   return (
-    <div className="min-h-screen bg-deep-navy flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Link
           href="/"
@@ -23,7 +23,7 @@ export default function LoginForm() {
           Back to home
         </Link>
 
-        <div className="bg-light-grey border-4 border-soft-black shadow-[8px_8px_0px_#474747] p-6 rounded-lg">
+        <div className="bg-light-grey border-2 border-soft-black  p-6 rounded-lg">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-black text-soft-black">LOGIN</h1>
             <div className="flex space-x-2">
@@ -78,7 +78,7 @@ export default function LoginForm() {
                 </div>
               </div>
 
-              <Button className="w-full h-12 bg-yellow hover:bg-yellow/90 text-soft-black font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747] rounded-md transition-transform hover:-translate-y-1">
+              <Button className="w-full h-12 bg-yellow hover:bg-yellow/90 text-soft-black font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1">
                 Login
               </Button>
 
@@ -111,7 +111,7 @@ export default function LoginForm() {
 
                   <Button
                     onClick={() => setFacialScanActive(true)}
-                    className="w-full h-12 bg-violet hover:bg-violet/90 text-soft-black font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747] rounded-md transition-transform hover:-translate-y-1">
+                    className="w-full h-12 bg-violet hover:bg-violet/90 text-soft-black font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1">
                     Start Camera
                   </Button>
                 </>

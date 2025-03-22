@@ -6,6 +6,10 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  .translate-0-important {
+  transform: translate(0) !important;
+  }
 }
 
 
@@ -76,3 +80,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.iverted-border-radius::after {
+  content: '';
+  position: absolute;
+  bottom: -25px;
+  left: 0;
+  width: 25px;
+  height: 25px;
+  border-top-left-radius: 25px;
+  box-shadow: -5px -5px 0 5px var(--color-white);
+}
+
+.iverted-border-radius::before {
+  content: '';
+  position: absolute;
+  right: -25px;
+  top: 0;
+  width: 25px;
+  height: 25px;
+  border-top-left-radius: 25px;
+  box-shadow: -5px -5px 0 5px var(--color-white);
+}
+
