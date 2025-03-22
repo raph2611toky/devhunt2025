@@ -146,7 +146,7 @@ export default function CourseListPage() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl bg-gray-100 border-[.15rem] border-black ">
+      <div className="w-full max-w-6xl p-6 bg-gray-100 border-[.15rem] border-black ">
         {/* En-tête */}
         <header className="mb-6">
           <Button
