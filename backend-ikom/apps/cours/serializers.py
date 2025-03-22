@@ -8,7 +8,7 @@ from .models import Interrogation, Question, Reponse
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['titre', 'description', 'domaine',"status"]
+        fields = ["id",'titre', 'description', 'domaine',"status"]
         
 
     def create(self, validated_data):
@@ -43,7 +43,7 @@ class EtapeSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Etape
-        fields = ['id', 'cours', 'titre', 'document_url', 'video_url', 'ordre']
+        fields = ['id', 'cours', 'titre', "document",'document_url', "video", 'video_url', 'ordre']
 
     def validate_document(self, value):
         # Valider que le document est un fichier PDF si fourni
@@ -86,7 +86,7 @@ class InterrogationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interrogation
-        fields = ['id', 'cours', 'titre', 'created_at', 'questions']
+        fields = ['id', 'etape', 'titre', 'created_at', 'questions']
 
     def create(self, validated_data):
         questions_data = validated_data.pop('questions')
