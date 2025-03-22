@@ -83,12 +83,11 @@ export default function FacialRecognition({
 
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Convertir en base64 et stocker
         const imageData = canvas.toDataURL("image/jpeg");
         setCapturedImage(imageData);
         setScanComplete(true);
-        stopCamera(); // Éteindre la caméra après la capture
-        verifyImage(imageData); // Vérifier l'image
+        stopCamera();
+        verifyImage(imageData);
       }
     }
   };

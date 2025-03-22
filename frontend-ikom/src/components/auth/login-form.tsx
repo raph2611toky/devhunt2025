@@ -9,7 +9,7 @@ import FacialRecognition from "./facial-recognition";
 
 export default function LoginForm() {
   const [loginMethod, setLoginMethod] = useState<"credentials" | "facial">(
-    "credentials"
+    "facial"
   );
   const [facialScanActive, setFacialScanActive] = useState(false);
 

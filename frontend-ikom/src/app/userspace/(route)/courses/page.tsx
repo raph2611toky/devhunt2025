@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
@@ -12,10 +12,9 @@ import {
   Users,
   Star,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function CourseListPage() {
-  const router = useRouter();
   const courses = [
     {
       id: 1,
@@ -123,6 +122,8 @@ export default function CourseListPage() {
     },
   ];
 
+  const router = useRouter();
+
   const categories = [
     { name: "Informatique", count: 2 },
     { name: "Langues", count: 2 },
@@ -144,71 +145,73 @@ export default function CourseListPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-light-grey to-rose/20 text-soft-black">
-      {/* En-tête */}
-      <header className="pt-10 pb-5 mb-8">
-        <div className="container px-4 mx-auto max-w-6xl">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl bg-gray-100 border-[.15rem] border-black ">
+        {/* En-tête */}
+        <header className="mb-6">
           <Button
             onClick={() => router.back()}
-            className="inline-flex items-center text-blue hover:text-yellow mb-6 transition-all duration-300 hover:scale-105 bg-white px-4 py-2 rounded-xl border">
+            className="inline-flex items-center bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black mb-6 hover:-translate-y-1 transition-transform">
             <ArrowLeft className="mr-2 h-5 w-5" />
             Retour aux cours
           </Button>
+          <h1 className="text-4xl font-extrabold text-black">
+            EXPLOREZ NOS COURS
+          </h1>
+          <p className="text-xl font-bold text-black mt-2">
+            Des formations adaptées pour booster vos compétences !
+          </p>
+        </header>
 
-          <div className="bg-white rounded-3xl p-8 border-2 border-black transition-all duration-300">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-soft-black mb-3 tracking-tight">
-              Explorez Nos Cours
-            </h1>
-            <p className="text-grey text-xl font-semibold">
-              Des formations adaptées pour booster vos compétences !
-            </p>
+        {/* Barre de recherche */}
+        <div className="mb-6">
+          <div className="relative bg-gray-200 border-2 border-black p-4">
+            <Search className="absolute left-8 top-1/2 transform -translate-y-1/2 h-6 w-6 text-black" />
+            <input
+              type="text"
+              placeholder="Trouvez votre cours idéal..."
+              className="w-full pl-16 pr-4 py-4 bg-transparent text-black text-lg font-bold placeholder-gray-500 focus:outline-none"
+            />
           </div>
         </div>
-      </header>
 
-      {/* Barre de recherche */}
-      <div className="container mx-auto max-w-6xl px-4 mb-10"></div>
-
-      {/* Contenu principal en bento grid */}
-      <div className="container mx-auto max-w-6xl px-4 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Filtres - 1 colonne */}
-          <div className="bg-yellow/10 rounded-3xl p-6 border-2 border-yellow h-fit">
-            <div className="flex items-center justify-between mb-6">
+        {/* Contenu principal */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Filtres */}
+          <div className="bg-gray-200 border-2 border-black p-6">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <Filter className="h-6 w-6 text-yellow" />
-                <h2 className="text-2xl font-extrabold text-soft-black tracking-tight">
-                  Filtres
-                </h2>
+                <Filter className="h-6 w-6 text-black" />
+                <h2 className="text-2xl font-extrabold text-black">FILTRES</h2>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-blue hover:text-yellow hover:bg-yellow/20 rounded-xl transition-all duration-300 text-lg font-semibold">
+                className="text-black hover:bg-yellow hover:text-black font-bold">
                 Réinitialiser
               </Button>
             </div>
 
             {/* Catégories */}
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-soft-black mb-3">
-                Catégories
+              <h3 className="text-xl font-extrabold text-black mb-3">
+                CATÉGORIES
               </h3>
               <div className="space-y-3">
                 {categories.map((category, index) => (
                   <label
                     key={index}
-                    className="flex items-center justify-between cursor-pointer p-3 bg-white rounded-lg hover:bg-yellow/20 transition-all duration-200 border border-yellow">
+                    className="flex items-center justify-between bg-white border-2 border-black p-3 hover:bg-yellow transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        className="w-5 h-5 accent-yellow rounded-md"
+                        className="w-5 h-5 accent-black border-2 border-black"
                       />
-                      <span className="text-soft-black text-lg font-medium">
+                      <span className="text-black font-bold text-lg">
                         {category.name}
                       </span>
                     </div>
-                    <span className="text-sm text-soft-black bg-yellow/30 px-2 py-1 rounded-xl font-semibold">
+                    <span className="text-sm text-black bg-yellow px-2 py-1 font-bold">
                       {category.count}
                     </span>
                   </label>
@@ -218,24 +221,22 @@ export default function CourseListPage() {
 
             {/* Niveaux */}
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-soft-black mb-3">
-                Niveau
-              </h3>
+              <h3 className="text-xl font-extrabold text-black mb-3">NIVEAU</h3>
               <div className="space-y-3">
                 {levels.map((level, index) => (
                   <label
                     key={index}
-                    className="flex items-center justify-between cursor-pointer p-3 bg-white rounded-lg hover:bg-yellow/20 transition-all duration-200 border border-yellow">
+                    className="flex items-center justify-between bg-white border-2 border-black p-3 hover:bg-yellow transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        className="w-5 h-5 accent-yellow rounded-md"
+                        className="w-5 h-5 accent-black border-2 border-black"
                       />
-                      <span className="text-soft-black text-lg font-medium">
+                      <span className="text-black font-bold text-lg">
                         {level.name}
                       </span>
                     </div>
-                    <span className="text-sm text-soft-black bg-yellow/30 px-2 py-1 rounded-xl font-semibold">
+                    <span className="text-sm text-black bg-yellow px-2 py-1 font-bold">
                       {level.count}
                     </span>
                   </label>
@@ -245,24 +246,24 @@ export default function CourseListPage() {
 
             {/* Adaptations */}
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-soft-black mb-3">
-                Adaptations
+              <h3 className="text-xl font-extrabold text-black mb-3">
+                ADAPTATIONS
               </h3>
               <div className="space-y-3">
                 {adaptations.map((adaptation, index) => (
                   <label
                     key={index}
-                    className="flex items-center justify-between cursor-pointer p-3 bg-white rounded-lg hover:bg-yellow/20 transition-all duration-200 border border-yellow">
+                    className="flex items-center justify-between bg-white border-2 border-black p-3 hover:bg-yellow transition-all duration-200">
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
-                        className="w-5 h-5 accent-yellow rounded-md"
+                        className="w-5 h-5 accent-black border-2 border-black"
                       />
-                      <span className="text-soft-black text-lg font-medium">
+                      <span className="text-black font-bold text-lg">
                         {adaptation.name}
                       </span>
                     </div>
-                    <span className="text-sm text-soft-black bg-yellow/30 px-2 py-1 rounded-full font-semibold">
+                    <span className="text-sm text-black bg-yellow px-2 py-1 font-bold">
                       {adaptation.count}
                     </span>
                   </label>
@@ -270,44 +271,44 @@ export default function CourseListPage() {
               </div>
             </div>
 
-            <Button className="w-full bg-yellow hover:bg-yellow/80 text-soft-black font-bold py-3 rounded-xl border border-yellow transition-all duration-300 text-lg">
+            <Button className="w-full bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black hover:-translate-y-1 transition-transform">
               Appliquer les filtres
             </Button>
           </div>
 
-          {/* Liste des cours - 3 colonnes */}
+          {/* Liste des cours */}
           <div className="md:col-span-3">
             {/* Options de tri */}
-            <div className="bg-white rounded-2xl p-4 mb-6 flex items-center justify-between border">
+            <div className="bg-gray-200 border-2 border-black p-4 mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <SlidersHorizontal className="h-6 w-6 text-blue" />
-                <span className="text-soft-black font-semibold text-xl">
-                  Trier par :
+                <SlidersHorizontal className="h-6 w-6 text-black" />
+                <span className="text-black font-extrabold text-xl">
+                  TRIER PAR :
                 </span>
               </div>
               <div className="flex gap-3">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-blue/20 border-black text-blue hover:bg-blue/30 rounded-xl transition-all duration-300 text-sm font-semibold">
+                  className="bg-yellow border-2 border-black text-black hover:bg-yellow/80 font-bold">
                   Popularité
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-white border-black text-soft-black hover:bg-blue/10 rounded-xl transition-all duration-300 text-sm font-semibold">
+                  className="bg-white border-2 border-black text-black hover:bg-yellow font-bold">
                   Récent
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="bg-white border-black text-soft-black hover:bg-blue/10 rounded-xl transition-all duration-300 text-sm font-semibold">
+                  className="bg-white border-2 border-black text-black hover:bg-yellow font-bold">
                   Alphabétique
                 </Button>
               </div>
             </div>
 
-            {/* Grille de cours en bento grid */}
+            {/* Grille de cours */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {courses.map((course, index) => (
                 <Link
@@ -315,72 +316,60 @@ export default function CourseListPage() {
                   key={course.id}
                   className="block">
                   <div
-                    className={`bg-white rounded-3xl overflow-hidden transform hover:-translate-y-1 transition-all duration-300 border border-black ${
+                    className={`bg-white border-2 border-black p-4 hover:-translate-y-1 transition-transform ${
                       index % 5 === 0 ? "md:col-span-2" : ""
                     }`}>
-                    <div className="relative">
+                    <div className="relative mb-4">
                       <img
                         src={course.image || "/placeholder.svg"}
                         alt={`Image du cours: ${course.title}`}
-                        className="w-full h-48 object-cover rounded-t-3xl"
+                        className="w-full h-48 object-cover border-2 border-black"
                       />
-                      <div className="absolute inset-0 bg-soft-black/40"></div>
-                      <div className="absolute bottom-0 left-0 p-4">
-                        <span className="bg-yellow text-soft-black px-3 py-1 rounded-full text-base font-bold border border-yellow">
-                          {course.category}
+                      <span className="absolute bottom-2 left-2 bg-yellow text-black px-3 py-1 font-bold border-2 border-black">
+                        {course.category}
+                      </span>
+                      <div className="absolute top-2 right-2 flex items-center gap-1 bg-black px-3 py-1 border-2 border-yellow">
+                        <Star className="h-5 w-5 text-yellow fill-yellow" />
+                        <span className="text-yellow font-bold">
+                          {course.rating}
                         </span>
                       </div>
-                      <div className="absolute top-3 right-3">
-                        <div className="flex items-center gap-1 bg-violet px-3 py-1 rounded-full border border-violet">
-                          <Star className="h-5 w-5 text-yellow fill-yellow" />
-                          <span className="text-white text-base font-semibold">
-                            {course.rating}
-                          </span>
-                        </div>
-                      </div>
                     </div>
-                    <div className="p-6">
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span className="bg-blue/20 text-blue px-3 py-1 rounded-xl text-base font-semibold border border-black">
-                          {course.level}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="bg-yellow text-black px-3 py-1 font-bold border-2 border-black">
+                        {course.level}
+                      </span>
+                      {course.adaptations.map((adaptation, i) => (
+                        <span
+                          key={i}
+                          className="bg-black text-yellow px-3 py-1 font-bold border-2 border-yellow">
+                          {adaptation}
                         </span>
-                        {course.adaptations.map((adaptation, i) => (
-                          <span
-                            key={i}
-                            className="bg-violet/20 text-violet px-3 py-1 rounded-xl text-base font-semibold border border-violet">
-                            {adaptation}
-                          </span>
-                        ))}
-                      </div>
-
-                      <h3 className="text-2xl font-extrabold mb-2 text-soft-black tracking-tight">
-                        {course.title}
-                      </h3>
-                      <p className="text-soft-black mb-4 line-clamp-2 text-lg font-medium">
-                        {course.description}
-                      </p>
-
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2 text-soft-black">
-                          <Clock className="h-5 w-5 text-blue" />
-                          <span className="text-base font-semibold">
-                            {course.duration}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-soft-black">
-                          <Users className="h-5 w-5 text-blue" />
-                          <span className="text-base font-semibold">
-                            {course.students} étudiants
-                          </span>
-                        </div>
-                      </div>
-
-                      <Button
-                        size="lg"
-                        className="w-full bg-yellow border-2 border-black hover:bg-yellow/80 text-soft-black font-bold py-3 rounded-xl transition-all duration-300 text-lg">
-                        Découvrir ce cours
-                      </Button>
+                      ))}
                     </div>
+                    <h3 className="text-2xl font-extrabold text-black mb-2">
+                      {course.title}
+                    </h3>
+                    <p className="text-black font-bold mb-4 line-clamp-2">
+                      {course.description}
+                    </p>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-5 w-5 text-black" />
+                        <span className="text-black font-bold">
+                          {course.duration}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-black" />
+                        <span className="text-black font-bold">
+                          {course.students} étudiants
+                        </span>
+                      </div>
+                    </div>
+                    <Button className="w-full bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black hover:-translate-y-1 transition-transform">
+                      Découvrir ce cours
+                    </Button>
                   </div>
                 </Link>
               ))}
@@ -391,32 +380,32 @@ export default function CourseListPage() {
               <Button
                 variant="outline"
                 size="lg"
-                className="px-6 bg-white border text-soft-black hover:bg-blue/10 rounded-xl transition-all duration-300 text-lg font-semibold"
+                className="bg-white border-2 border-black text-black hover:bg-yellow font-bold"
                 disabled>
                 Précédent
               </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="px-6 bg-yellow text-soft-black border-yellow hover:bg-yellow/80 rounded-xl transition-all duration-300 text-lg font-semibold">
+                className="bg-yellow border-2 border-black text-black hover:bg-yellow/80 font-bold">
                 1
               </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="px-6 bg-white border-black text-soft-black hover:bg-blue/10 rounded-xl transition-all duration-300 text-lg font-semibold">
+                className="bg-white border-2 border-black text-black hover:bg-yellow font-bold">
                 2
               </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="px-6 bg-white border-black text-soft-black hover:bg-blue/10 rounded-xl transition-all duration-300 text-lg font-semibold">
+                className="bg-white border-2 border-black text-black hover:bg-yellow font-bold">
                 3
               </Button>
               <Button
                 variant="outline"
                 size="lg"
-                className="px-6 bg-white border-black text-soft-black hover:bg-blue/10 rounded-xl transition-all duration-300 text-lg font-semibold">
+                className="bg-white border-2 border-black text-black hover:bg-yellow font-bold">
                 Suivant
               </Button>
             </div>
@@ -424,19 +413,19 @@ export default function CourseListPage() {
         </div>
 
         {/* Aide */}
-        <div className="mt-12 bg-green/20 rounded-3xl p-8 border border-green text-center transition-all duration-300">
+        <div className="mt-12 bg-black border-2 border-yellow p-6 text-center">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <BookOpen className="h-10 w-10 text-green" />
-            <h3 className="text-3xl font-extrabold text-soft-black tracking-tight">
-              Besoin d’un coup de pouce ?
+            <BookOpen className="h-10 w-10 text-yellow" />
+            <h3 className="text-3xl font-extrabold text-yellow">
+              BESOIN D’UN COUP DE POUCE ?
             </h3>
           </div>
-          <p className="text-xl mb-6 text-soft-black font-semibold">
+          <p className="text-xl font-bold text-yellow mb-6">
             Laissez-nous vous guider vers le cours parfait pour vous !
           </p>
           <Button
             size="lg"
-            className="px-10 py-6 bg-green hover:bg-green/80 text-white font-bold rounded-xl border border-green transition-all duration-300 text-lg">
+            className="bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black hover:-translate-y-1 transition-transform">
             Parler à un conseiller
           </Button>
         </div>
