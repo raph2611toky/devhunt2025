@@ -247,9 +247,9 @@ class CoursePublishAPIView(APIView):
             if not cours.etapes.exists():
                 return Response({"erreur": "Le cours doit avoir au moins une étape et une interrogation."}, status=status.HTTP_400_BAD_REQUEST)
 
-            etape = Etape.objects.get(id=cours.etape)
-            if not etape.interrogations.exists():
-                return Response({"erreur": "L'étape doit avoir au moins une interrogation."}, status=status.HTTP_400_BAD_REQUEST)
+            for etape in cours.etapes.all():
+                if not etape.interrogations.exists():
+                    return Response({"erreur": "L'étape doit avoir au moins une interrogation."}, status=status.HTTP_400_BAD_REQUEST)
             
 
             # Publier le cours

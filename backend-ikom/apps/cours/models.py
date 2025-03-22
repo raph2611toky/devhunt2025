@@ -43,7 +43,7 @@ class Etape(models.Model):
         ordering = ['ordre']
 
 class Interrogation(models.Model):
-    etape = models.ForeignKey(Etape, on_delete=models.CASCADE, related_name='etape')
+    etape = models.ForeignKey(Etape, on_delete=models.CASCADE, related_name='interrogations')
     titre = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
 
