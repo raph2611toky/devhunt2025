@@ -9,6 +9,7 @@ from apps.cours.serializers import CourseSerializer, EtapeSerializer, Interrogat
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
+
 class CourseCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -28,6 +29,7 @@ class CourseCreateAPIView(APIView):
             course = serializer.save()
             return Response(CourseSerializer(course).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class EtapeCreateAPIView(APIView):
     permission_classes = [AllowAny]
@@ -85,7 +87,7 @@ class EtapeCreateAPIView(APIView):
             # Validation des données via le serializer
             serializer = self.serializer_class(data=etape_data)
             if serializer.is_valid(raise_exception=True):
-                serializer.save()
+                serializer.save()                
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response({'erreur': 'Erreur de validation'}, status=status.HTTP_400_BAD_REQUEST)
@@ -132,7 +134,7 @@ class InterrogationCreateAPIView(APIView):
     serializer_class = InterrogationSerializer
 
     @swagger_auto_schema(
-        operation_description="Créer une interrogation avec des questions et des réponses associées à un cours.",
+        operation_description="Créer une interrogation avec des questions et des réponses associées à une étapes.",
         request_body=InterrogationSerializer,
         responses={
             201: openapi.Response(
@@ -152,13 +154,13 @@ class InterrogationCreateAPIView(APIView):
         tags=["Interrogations"],
     )
     def post(self, request, *args, **kwargs):
-        cours_id = request.data.get('cours')
+        etape_id = request.data.get('etape')
         
-        # Vérifier si le cours existe
+        # Vérifier si le etape existe
         try:
-            cours = Course.objects.get(id=cours_id)
-        except Course.DoesNotExist:
-            return Response({'erreur': 'Cours non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+            etape_id = Etape.objects.get(id=etape_id)
+        except Etape.DoesNotExist:
+            return Response({'erreur': 'etape non trouvé'}, status=status.HTTP_404_NOT_FOUND)
         
         # Ajout de l'interrogation
         serializer = self.serializer_class(data=request.data)
@@ -190,11 +192,11 @@ class InterrogationListAPIView(APIView):
         tags=["Interrogations"],
     )
     def get(self, request, *args, **kwargs):
-        cours_id = kwargs.get('cours_id')  # Récupère l'ID du cours dans les paramètres URL
+        etape_id = kwargs.get('etape_id')  # Récupère l'ID du cours dans les paramètres URL
         try:
-            interrogations = Interrogation.objects.filter(cours=cours_id)
+            interrogations = Interrogation.objects.filter(etape=etape_id)
             if not interrogations:
-                return Response({'erreur': 'Cours non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'erreur': 'Etape non trouvé'}, status=status.HTTP_404_NOT_FOUND)
 
             # Sérialiser les intérrogations et les retourner dans la réponse
             serializer = self.serializer_class(interrogations, many=True)
@@ -242,8 +244,13 @@ class CoursePublishAPIView(APIView):
             cours = Course.objects.get(id=cours_id)
 
             # Vérifier que le cours a au moins une étape et une interrogation
-            if not cours.etapes.exists() or not cours.interrogations.exists():
+            if not cours.etapes.exists():
                 return Response({"erreur": "Le cours doit avoir au moins une étape et une interrogation."}, status=status.HTTP_400_BAD_REQUEST)
+
+            etape = Etape.objects.get(id=cours.etape)
+            if not etape.interrogations.exists():
+                return Response({"erreur": "L'étape doit avoir au moins une interrogation."}, status=status.HTTP_400_BAD_REQUEST)
+            
 
             # Publier le cours
             cours.status = "Published"  # Marquer le cours comme publié (ou toute autre logique)

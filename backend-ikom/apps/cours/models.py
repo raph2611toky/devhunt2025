@@ -32,7 +32,7 @@ class Etape(models.Model):
     titre = models.CharField(max_length=200)
     document = models.FileField(upload_to='courses/documents/', null=True, blank=True)
     video = models.FileField(upload_to='courses/videos/')
-    ordre = models.PositiveIntegerField(default=0,unique=True)
+    ordre = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -43,7 +43,7 @@ class Etape(models.Model):
         ordering = ['ordre']
 
 class Interrogation(models.Model):
-    cours = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='interrogations')
+    etape = models.ForeignKey(Etape, on_delete=models.CASCADE, related_name='etape')
     titre = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
 
