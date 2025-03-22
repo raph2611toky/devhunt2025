@@ -31,7 +31,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-deep-navy flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen  flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Link
           href="/"
@@ -40,7 +40,7 @@ export default function RegisterForm() {
           Back to home
         </Link>
 
-        <div className="bg-light-grey border-4 border-soft-black shadow-[8px_8px_0px_#474747] p-6 rounded-lg">
+        <div className="bg-light-grey border-2 border-soft-black  p-6 rounded-lg">
           <h1 className="text-3xl font-black text-soft-black mb-6">REGISTER</h1>
 
           {registrationStep === "intro" && (
@@ -81,7 +81,7 @@ export default function RegisterForm() {
 
               <Button
                 onClick={() => setRegistrationStep("scan-id")}
-                className="w-full h-12 bg-blue hover:bg-blue/90 text-soft-black font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747] rounded-md transition-transform hover:-translate-y-1">
+                className="w-full h-12 bg-blue hover:bg-blue/90 text-soft-black font-bold border-2 border-soft-black  rounded-md transition-transform hover:-translate-y-1">
                 Start Registration
               </Button>
             </div>
@@ -146,7 +146,7 @@ export default function RegisterForm() {
               </div>
 
               <Link href="/login" className="block w-full">
-                <Button className="w-full h-12 bg-green hover:bg-green/90 text-white font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747] rounded-md transition-transform hover:-translate-y-1">
+                <Button className="w-full h-12 bg-green hover:bg-green/90 text-white font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1">
                   Proceed to Login
                 </Button>
               </Link>
@@ -175,7 +175,7 @@ export default function RegisterForm() {
 
               <Button
                 onClick={() => setRegistrationStep("intro")}
-                className="w-full h-12 bg-soft-black hover:bg-soft-black/90 text-white font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747] rounded-md transition-transform hover:-translate-y-1">
+                className="w-full h-12 bg-soft-black hover:bg-soft-black/90 text-white font-bold border-2 border-soft-black  rounded-md transition-transform hover:-translate-y-1">
                 Try Again
               </Button>
             </div>
