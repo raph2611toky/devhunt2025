@@ -33,6 +33,8 @@ class Etape(models.Model):
     document = models.FileField(upload_to='courses/documents/', null=True, blank=True)
     video = models.FileField(upload_to='courses/videos/')
     ordre = models.PositiveIntegerField(default=0)
+    video_content = models.TextField(default="")
+    ordre = models.PositiveIntegerField(default=0,unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
