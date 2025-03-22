@@ -16,17 +16,20 @@ def default_created_at():
     return django_timezone.now() + timedelta(hours=int(tz))
 
 class User(AbstractBaseUser):
-    SEXE_CHOICE = [('M', 'Masculin'),('F', 'Feminin'),('I', 'Inconnu')]
-    HANDICAP_TYPE = [("AVEUGLE","AVEUGLE"), ("SOURD","SOURD"), ("MUTILE_INF", "MUTILE_INF"), ("MUTILE_SUP", "MUTILE_SUP"), ("MUET","MUET")]
-    
+    SEXE_CHOICE = [('M', 'Masculin'), ('F', 'Feminin'), ('I', 'Inconnu')]
+    HANDICAP_TYPE = [("AVEUGLE", "AVEUGLE"), ("SOURD", "SOURD"), ("MUTILE_INF", "MUTILE_INF"), 
+                     ("MUTILE_SUP", "MUTILE_SUP"), ("MUET", "MUET"), ("AUCUN", "AUCUN"), ("AUTRES", "AUTRES")]
+    USER_TYPE = [("HANDICAP", "Utilisateur Handicapé"), ("MODERATOR", "Modérateur/Professeur")]
+
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     sexe = models.CharField(max_length=1, choices=SEXE_CHOICE, default='I')
-    password = models.CharField(max_length=250)
+    password = models.CharField(max_length=250, blank=True)
     birth_date = models.DateField()
-    profile = models.ImageField(upload_to='users/profiles', default='users/profiles/default.png')
-    cin_number = models.CharField(max_length=12)
-    handicap_type = models.CharField(max_length=100, choices=HANDICAP_TYPE, default="AVEUGLE")
+    profile = models.ImageField(upload_to='users/profiles', default='users/profiles/default.png', null=True, blank=True)
+    cin_number = models.CharField(max_length=12, default='')
+    handicap_type = models.CharField(max_length=100, choices=HANDICAP_TYPE, default="AUCUN")
+    user_type = models.CharField(max_length=20, choices=USER_TYPE, default="HANDICAP")
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)

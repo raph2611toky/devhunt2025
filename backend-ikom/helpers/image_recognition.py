@@ -6,6 +6,7 @@ import cv2
 import traceback
 import os
 import face_recognition
+import datetime
 
 def face_recognition_save(image_path, directory_to_save, filename_to_save):
     if not os.path.exists(image_path):
@@ -176,6 +177,60 @@ def image_to_text(image_path):
     )
     text = pytesseract.image_to_string(adaptive_thresh_image, lang='fra')
     return text
+
+def extract_cin_sections(image_path):
+    image = cv2.imread(image_path)
+    if image is None:
+        return None, "Could not load image"
+    height, width = image.shape[:2]
+    
+    # Définir les sections horizontales (approximatives, à ajuster selon votre image)
+    sections = {
+        "nom": (0.15 * height, 0.25 * height),  # ANARANA / Nom
+        "prenom": (0.25 * height, 0.35 * height),  # FANAMPIN'ANARANA / Prénoms
+        "birth_date": (0.45 * height, 0.55 * height),  # Né(e) le
+        "birth_place": (0.55 * height, 0.65 * height),  # Tao / à
+        "cin_number": (0.75 * height, 0.85 * height)  # LAHARANA / N°
+    }
+    
+    extracted_data = {}
+    temp_dir = "temp_sections"
+    if not os.path.exists(temp_dir):
+        os.makedirs(temp_dir)
+    
+    try:
+        for field, (y_start, y_end) in sections.items():
+            y_start, y_end = int(y_start), int(y_end)
+            section_image = image[y_start:y_end, 0:width]
+            section_path = os.path.join(temp_dir, f"{field}.jpg")
+            cv2.imwrite(section_path, section_image)
+            text = image_to_text(section_path, lang='fra')
+            if text:
+                text = text.strip()
+                if field == "nom":
+                    extracted_data["nom"] = text.replace("ANARANA / Nom :", "").strip()
+                elif field == "prenom":
+                    extracted_data["prenom"] = text.replace("FANAMPIN'ANARANA / Prénoms :", "").strip()
+                elif field == "birth_date":
+                    date_str = text.replace("Né(e) le :", "").strip()
+                    try:
+                        extracted_data["birth_date"] = datetime.strptime(date_str, "%d %B %Y").date()
+                    except:
+                        extracted_data["birth_date"] = None
+                elif field == "birth_place":
+                    extracted_data["birth_place"] = text.replace("Tao / à :", "").strip()
+                elif field == "cin_number":
+                    extracted_data["cin_number"] = ''.join(filter(str.isdigit, text))
+    
+    except Exception as e:
+        return None, str(e)
+    
+    finally:
+        for file in os.listdir(temp_dir):
+            os.remove(os.path.join(temp_dir, file))
+        os.rmdir(temp_dir)
+    
+    return extracted_data, None
 
 def compare_faces(saved_image_path, selfie_image_path, threshold=0.5):
     try:
