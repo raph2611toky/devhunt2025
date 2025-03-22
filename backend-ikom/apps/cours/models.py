@@ -8,11 +8,16 @@ class Course(models.Model):
         ('SCI', 'Sciences'),
         ('LANG', 'Langues'),
     ]
+    STATUS = [
+        ('Pend', 'Pending'),
+        ('Publ', 'Published'),
+    ]
 
     titre = models.CharField(max_length=200)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses')
-    domaine = models.CharField(max_length=4, choices=DOMAINES)
+    domaine = models.CharField(max_length=4, choices=DOMAINES, default="Programmation")
+    status = models.CharField(max_length=4, choices=STATUS, default="Pending")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -27,7 +32,7 @@ class Etape(models.Model):
     titre = models.CharField(max_length=200)
     document = models.FileField(upload_to='courses/documents/', null=True, blank=True)
     video = models.FileField(upload_to='courses/videos/')
-    ordre = models.PositiveIntegerField(default=0)
+    ordre = models.PositiveIntegerField(default=0,unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -70,3 +75,4 @@ class Reponse(models.Model):
 
     class Meta:
         db_table = 'reponse'
+        
