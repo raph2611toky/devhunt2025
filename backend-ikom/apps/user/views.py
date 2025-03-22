@@ -220,6 +220,7 @@ class RegisterView(APIView):
             
             serializer = RegisterSerializer(data=user_data)
             if serializer.is_valid(raise_exception=True):
+                serializer.save()
                 return Response({"email": serializer.validated_data["email"]}, status=status.HTTP_201_CREATED)
             else:
                 return Response({'erreur': 'erreur de serialisation'}, status=status.HTTP_400_BAD_REQUEST)
@@ -528,3 +529,5 @@ class LoginFaceView(APIView):
             if saved_face_path and os.path.exists(saved_face_path):
                 os.remove(saved_face_path)
             return Response({"erreur": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        

@@ -19,6 +19,7 @@ ALLOWED_HOSTS = [IP_ADDR, '127.0.0.1', 'localhost']
 
 LOCAL_APPS = [
     'apps.user.apps.UserConfig',
+    'apps.cours.apps.CoursConfig',
 ]
 
 THIRD_APPS = [
