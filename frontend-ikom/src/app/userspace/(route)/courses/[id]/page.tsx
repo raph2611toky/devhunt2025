@@ -17,7 +17,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
     title: "Utiliser un ordinateur - Niveau débutant",
     description:
       "Apprenez les bases de l'utilisation d'un ordinateur, de la souris et du clavier. Ce cours est adapté pour les débutants complets.",
-    image: "/placeholder.svg?height=400&width=800",
+    image: "/assets/images/img.png",
     level: "Débutant",
     adaptations: ["Visuel", "Moteur"],
     modules: [
@@ -75,11 +75,11 @@ export default function CoursePage({ params }: { params: { id: string } }) {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-5xl bg-gray-100 border-[.15rem] border-black p-6">
+      <div className="w-full max-w-5xl bg-gray-100 border border-black p-6">
         {/* En-tête */}
         <header className="mb-6">
           <Link href="/courses">
-            <Button className="inline-flex items-center bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black mb-6 hover:-translate-y-1 transition-transform">
+            <Button className="inline-flex items-center bg-yellow hover:bg-yellow/80 text-black font-bold border border-black mb-6 hover:-translate-y-1 transition-transform">
               <ArrowLeft className="mr-2 h-5 w-5" />
               Retour aux cours
             </Button>
@@ -88,13 +88,13 @@ export default function CoursePage({ params }: { params: { id: string } }) {
             {course.title}
           </h1>
           <div className="flex flex-wrap gap-3">
-            <span className="bg-yellow text-black px-4 py-1 font-bold border-2 border-black">
+            <span className="bg-yellow text-black px-4 py-1 font-bold border border-black">
               Niveau: {course.level}
             </span>
             {course.adaptations.map((adaptation, i) => (
               <span
                 key={i}
-                className="bg-black text-yellow px-4 py-1 font-bold border-2 border-yellow">
+                className="bg-black text-yellow px-4 py-1 font-bold border border-yellow">
                 {adaptation}
               </span>
             ))}
@@ -104,7 +104,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Image du cours */}
-          <div className="md:col-span-2 bg-gray-200 border-2 border-black">
+          <div className="md:col-span-2 bg-gray-200 border border-black">
             <div className="relative">
               <img
                 src={course.image || "/placeholder.svg"}
@@ -115,12 +115,12 @@ export default function CoursePage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Progression */}
-          <div className="bg-yellow border-2 border-black p-6">
+          <div className="bg-yellow border border-black p-6">
             <h2 className="text-xl font-extrabold text-black mb-4">
               VOTRE PROGRESSION
             </h2>
             <div className="flex items-center gap-4 mb-3">
-              <div className="flex-grow h-4 bg-white border-2 border-black overflow-hidden">
+              <div className="flex-grow h-4 bg-white border border-black overflow-hidden">
                 <div
                   className="h-full bg-black"
                   style={{ width: `${progressPercentage}%` }}
@@ -134,7 +134,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
               {completedLessons}/{totalLessons} leçons terminées
             </p>
             <Link href={`/courses/${params.id}/roadmap`}>
-              <Button className="w-full bg-black hover:bg-gray-800 text-yellow font-bold border-2 border-yellow hover:-translate-y-1 transition-transform">
+              <Button className="w-full bg-black hover:bg-gray-800 text-yellow font-bold border border-yellow hover:-translate-y-1 transition-transform">
                 <MapPin className="h-5 w-5 mr-2" />
                 Ma roadmap
               </Button>
@@ -143,12 +143,12 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Description */}
-        <div className="bg-gray-200 border-2 border-black p-6 mb-8">
+        <div className="bg-gray-200 border border-black p-6 mb-8">
           <h2 className="text-2xl font-extrabold text-black mb-4">
             À PROPOS DE CE COURS
           </h2>
           <p className="text-black font-bold text-lg">{course.description}</p>
-          <div className="mt-6 bg-yellow border-2 border-black p-4">
+          <div className="mt-6 bg-yellow border border-black p-4">
             <div className="flex items-start gap-3">
               <HelpCircle className="h-6 w-6 text-black mt-1" />
               <div>
@@ -170,7 +170,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         </h2>
         <div className="space-y-6">
           {course.modules.map((module, moduleIndex) => (
-            <div key={moduleIndex} className="bg-white border-2 border-black">
+            <div key={moduleIndex} className="bg-white border border-black">
               <div className="bg-black p-6 border-b-2 border-yellow">
                 <h3 className="text-xl font-extrabold text-yellow">
                   Module {moduleIndex + 1} : {module.title}
@@ -183,7 +183,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                     className="p-6 flex items-center justify-between hover:bg-yellow/20 transition-colors duration-200">
                     <div className="flex items-center gap-4">
                       <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center border-2 border-black ${
+                        className={`w-12 h-12 rounded-full flex items-center justify-center border border-black ${
                           lesson.completed
                             ? "bg-yellow text-black"
                             : "bg-white text-black"
@@ -208,8 +208,8 @@ export default function CoursePage({ params }: { params: { id: string } }) {
                       size="lg"
                       className={
                         lesson.completed
-                          ? "bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black hover:-translate-y-1 transition-transform"
-                          : "bg-black hover:bg-gray-800 text-yellow font-bold border-2 border-yellow hover:-translate-y-1 transition-transform"
+                          ? "bg-yellow hover:bg-yellow/80 text-black font-bold border border-black hover:-translate-y-1 transition-transform"
+                          : "bg-black hover:bg-gray-800 text-yellow font-bold border border-yellow hover:-translate-y-1 transition-transform"
                       }>
                       {lesson.completed ? "Revoir" : "Commencer"}
                     </Button>
@@ -221,7 +221,7 @@ export default function CoursePage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Section d’aide */}
-        <div className="mt-10 bg-black border-2 border-yellow p-8 text-center">
+        <div className="mt-10 bg-black border border-yellow p-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="h-8 w-8 text-yellow" />
             <h3 className="text-2xl font-extrabold text-yellow">
@@ -234,13 +234,13 @@ export default function CoursePage({ params }: { params: { id: string } }) {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black hover:-translate-y-1 transition-transform">
+              className="bg-yellow hover:bg-yellow/80 text-black font-bold border border-black hover:-translate-y-1 transition-transform">
               Contacter un formateur
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="bg-black border-2 border-yellow text-yellow hover:bg-yellow hover:text-black font-bold transition-transform hover:-translate-y-1">
+              className="bg-black border border-yellow text-yellow hover:bg-yellow hover:text-black font-bold transition-transform hover:-translate-y-1">
               FAQ
             </Button>
           </div>

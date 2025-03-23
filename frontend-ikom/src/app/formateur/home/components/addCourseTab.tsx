@@ -72,7 +72,7 @@ export default function AddCourseTab() {
   };
 
   return (
-    <div className="bg-gray-200 border-2 border-black p-6">
+    <div className="bg-gray-200 border border-black p-6">
       <h2 className="text-2xl font-extrabold text-black mb-4">
         AJOUTER UN COURS
       </h2>
@@ -83,7 +83,7 @@ export default function AddCourseTab() {
           <input
             type="text"
             placeholder="Titre du cours"
-            className={`w-full p-3 text-lg bg-white border-2 border-black text-black placeholder-gray-500 focus:outline-none ${
+            className={`w-full p-3 text-lg bg-white border border-black text-black placeholder-gray-500 focus:outline-none ${
               errors.titre ? "border-red-500" : ""
             }`}
             {...register("titre")}
@@ -101,7 +101,7 @@ export default function AddCourseTab() {
           </label>
           <textarea
             placeholder="Description du cours"
-            className={`w-full p-3 text-lg bg-white border-2 border-black text-black placeholder-gray-500 focus:outline-none ${
+            className={`w-full p-3 text-lg bg-white border border-black text-black placeholder-gray-500 focus:outline-none ${
               errors.description ? "border-red-500" : ""
             }`}
             {...register("description")}
@@ -118,7 +118,7 @@ export default function AddCourseTab() {
         <div>
           <label className="block text-lg font-bold text-black">Domaine</label>
           <select
-            className={`w-full p-3 text-lg bg-white border-2 border-black text-black focus:outline-none ${
+            className={`w-full p-3 text-lg bg-white border border-black text-black focus:outline-none ${
               errors.domaine ? "border-red-500" : ""
             }`}
             {...register("domaine")}
@@ -139,7 +139,7 @@ export default function AddCourseTab() {
         <div>
           <label className="block text-lg font-bold text-black">Statut</label>
           <select
-            className={`w-full p-3 text-lg bg-white border-2 border-black text-black focus:outline-none ${
+            className={`w-full p-3 text-lg bg-white border border-black text-black focus:outline-none ${
               errors.status ? "border-red-500" : ""
             }`}
             {...register("status")}
@@ -156,7 +156,7 @@ export default function AddCourseTab() {
         <Button
           type="submit"
           size="lg"
-          className="w-full bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black hover:-translate-y-1 transition-transform disabled:opacity-50"
+          className="w-full bg-yellow hover:bg-yellow/80 text-black font-bold border border-black hover:-translate-y-1 transition-transform disabled:opacity-50"
           disabled={isLoading}>
           {isLoading ? (
             <span className="flex items-center justify-center">

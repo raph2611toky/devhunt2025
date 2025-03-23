@@ -17,7 +17,7 @@ export default function InstructorDashboard() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl bg-gray-100 border-[.15rem] border-black p-6">
+      <div className="w-full max-w-6xl bg-gray-100 border border-black p-6">
         <DashboardHeader />
         <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         <DashboardContent activeTab={activeTab} />

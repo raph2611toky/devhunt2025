@@ -33,7 +33,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="bg-white border-b-[.15rem] border-black py-4 sticky top-0 z-50">
+    <div className="bg-white border border-black py-4 sticky top-0 z-50">
       <div className="container px-4 mx-auto max-w-6xl">
         <div className="flex items-center justify-between">
           {/* Section gauche : Boutons de contrôle */}
@@ -43,7 +43,7 @@ export default function Navbar() {
               size="sm"
               onClick={activateVoiceReader}
               aria-label="Activer le lecteur vocal"
-              className="h-12 w-12 bg-yellow border-2 border-black text-black hover:bg-yellow/80 hover:-translate-y-1 transition-transform">
+              className="h-12 w-12 bg-yellow border border-black text-black hover:bg-yellow/80 hover:-translate-y-1 transition-transform">
               <Volume2 className="h-6 w-6" />
             </Button>
 
@@ -52,7 +52,7 @@ export default function Navbar() {
               size="sm"
               onClick={() => setShowHelp(!showHelp)}
               aria-label="Aide"
-              className="h-12 flex items-center gap-2 px-6 py-3 bg-yellow border-2 border-black text-black font-bold hover:bg-yellow/80 hover:-translate-y-1 transition-transform">
+              className="h-12 flex items-center gap-2 px-6 py-3 bg-yellow border border-black text-black font-bold hover:bg-yellow/80 hover:-translate-y-1 transition-transform">
               <HelpCircle className="h-5 w-5" />
               <span>AIDE</span>
             </Button>
@@ -79,7 +79,7 @@ export default function Navbar() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-white border-[.15rem] border-black text-black">
+              <DropdownMenuContent className="w-56 bg-white border border-black text-black">
                 <DropdownMenuLabel className="font-bold">
                   <div className="flex flex-col space-y-1">
                     <p className="text-lg font-extrabold">Jean Dupont</p>
@@ -109,7 +109,7 @@ export default function Navbar() {
 
         {/* Section Aide */}
         {showHelp && (
-          <div className="mt-4 p-6 bg-yellow border-[.15rem] border-black rounded-none">
+          <div className="mt-4 p-6 bg-yellow border border-black rounded-none">
             <h3 className="font-extrabold text-2xl mb-4 text-black">
               COMMENT UTILISER CETTE PAGE :
             </h3>
@@ -133,7 +133,7 @@ export default function Navbar() {
               AIDE : 01 23 45 67 89
             </p>
             <Button
-              className="mt-6 bg-black hover:bg-gray-800 text-yellow font-extrabold text-lg border-4 border-yellow hover:-translate-y-1 transition-transform"
+              className="mt-6 bg-black hover:bg-gray-800 text-yellow font-extrabold text-lg border border-yellow hover:-translate-y-1 transition-transform"
               onClick={() => setShowHelp(false)}>
               FERMER
             </Button>
