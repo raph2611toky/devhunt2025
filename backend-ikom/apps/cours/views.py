@@ -9,6 +9,10 @@ from apps.cours.serializers import CourseSerializer, EtapeSerializer, Interrogat
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
+from helpers.video import video_to_subtitled_video
+from django.conf import settings
+from django.core.files import File
+import os
 
 class CourseCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -30,11 +34,10 @@ class CourseCreateAPIView(APIView):
             return Response(CourseSerializer(course).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class EtapeCreateAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = EtapeSerializer
-    parser_classes = [MultiPartParser, FormParser]  # Permettre l'upload de fichiers
+    parser_classes = [MultiPartParser, FormParser] 
 
     @swagger_auto_schema(
         operation_description="Création d'une étape de cours avec upload de fichiers (PDF et vidéo)",
@@ -81,19 +84,26 @@ class EtapeCreateAPIView(APIView):
     )
     def post(self, request):
         try:
-            # Récupération des données de la requête
             etape_data = request.data
-
-            # Validation des données via le serializer
             serializer = self.serializer_class(data=etape_data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()                
+                etape_new = serializer.save()
+                video_path = os.path.join(settings.BASE_DIR, etape_new.video.path)
+
+                output_video_path, video_content = video_to_subtitled_video(video_path, output_video_path=video_path)
+
+                if output_video_path and os.path.exists(output_video_path):
+                    with open(output_video_path, 'rb') as video_file:
+                        etape_new.video.save(os.path.basename(video_path), File(video_file), save=False)
+
+                    etape_new.video_content = video_content if video_content else ""
+                    etape_new.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response({'erreur': 'Erreur de validation'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"erreur": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-  
 
 class EtapeListAPIView(APIView):
     permission_classes = [AllowAny]
@@ -116,21 +126,65 @@ class EtapeListAPIView(APIView):
         tags=["Etapes"],
     )
     def get(self, request, *args, **kwargs):
-        cours_id = kwargs.get('cours_id')  # Récupère l'ID du cours dans les paramètres URL
+        cours_id = kwargs.get('cours_id')
         try:
             etapes = Etape.objects.filter(cours=cours_id)
             if not etapes:
                 return Response({'erreur': 'Cours non trouvé'}, status=status.HTTP_404_NOT_FOUND)
-
-            # Sérialiser les étapes et les retourner dans la réponse
             serializer = self.serializer_class(etapes, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Etape.DoesNotExist:
             return Response({'erreur': 'Cours non trouvé'}, status=status.HTTP_404_NOT_FOUND)
-        
-      
+
+class EtapeDeleteAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_description="Supprimer une étape spécifique d'un cours",
+        manual_parameters=[
+            openapi.Parameter(
+                'id', openapi.IN_PATH, description="ID de l'étape à supprimer", type=openapi.TYPE_INTEGER, required=True
+            ),
+        ],
+        responses={
+            204: openapi.Response(description="Étape supprimée avec succès"),
+            404: openapi.Response(
+                description="Étape non trouvée",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'erreur': openapi.Schema(type=openapi.TYPE_STRING, example="Étape non trouvée"),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Erreur lors de la suppression",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'erreur': openapi.Schema(type=openapi.TYPE_STRING, example="Erreur lors de la suppression"),
+                    },
+                ),
+            ),
+        },
+        tags=["Etapes"],
+    )
+    def delete(self, request, id):
+        try:
+            etape = Etape.objects.get(id=id)
+            if etape.document and os.path.exists(etape.document.path):
+                os.remove(etape.document.path)
+            if etape.video and os.path.exists(etape.video.path):
+                os.remove(etape.video.path)
+            etape.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Etape.DoesNotExist:
+            return Response({'erreur': 'Étape non trouvée'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'erreur': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 class InterrogationCreateAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     serializer_class = InterrogationSerializer
 
     @swagger_auto_schema(
@@ -169,8 +223,7 @@ class InterrogationCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response({'erreur': 'Erreur de validation des données'}, status=status.HTTP_400_BAD_REQUEST)
-  
-  
+
 class InterrogationListAPIView(APIView):
     permission_classes = [AllowAny]
     serializer_class = InterrogationSerializer
@@ -204,7 +257,6 @@ class InterrogationListAPIView(APIView):
         except Interrogation.DoesNotExist:
             return Response({'erreur': 'Interrogation non trouvé'}, status=status.HTTP_404_NOT_FOUND)
 
-
 class CoursePublishAPIView(APIView):
     @swagger_auto_schema(
         operation_description="Publier un cours (doit avoir au moins une étape et une interrogation).",
@@ -213,7 +265,7 @@ class CoursePublishAPIView(APIView):
             properties={
                 'id': openapi.Schema(type=openapi.TYPE_INTEGER, description="ID du cours à publier", example=1),
             },
-            required=['id']  # ID est obligatoire
+            required=['id']
         ),
         responses={
             200: openapi.Response(
@@ -265,5 +317,66 @@ class CoursePublishAPIView(APIView):
         except Exception as e:
             return Response({'erreur': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+class CourseListAPIView(APIView):
+    permission_classes = [AllowAny]
 
+    @swagger_auto_schema(
+        operation_description="Récupérer la liste de tous les cours",
+        responses={
+            200: CourseSerializer(many=True),
+            404: openapi.Response(
+                description="Aucun cours trouvé",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'erreur': openapi.Schema(type=openapi.TYPE_STRING, example="Aucun cours trouvé"),
+                    },
+                ),
+            ),
+        },
+        tags=["Cours"],
+    )
+    def get(self, request):
+        try:
+            courses = Course.objects.all()
+            if not courses.exists():
+                return Response({'erreur': 'Aucun cours trouvé'}, status=status.HTTP_404_NOT_FOUND)
+            serializer = CourseSerializer(courses, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'erreur': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class CourseDetailAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(
+        operation_description="Récupérer les détails complets d'un cours (avec étapes et interrogations)",
+        manual_parameters=[
+            openapi.Parameter(
+                'id_cours', openapi.IN_PATH, description="ID du cours", type=openapi.TYPE_INTEGER, required=True
+            ),
+        ],
+        responses={
+            200: CourseSerializer(),
+            404: openapi.Response(
+                description="Cours non trouvé",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'erreur': openapi.Schema(type=openapi.TYPE_STRING, example="Cours non trouvé"),
+                    },
+                ),
+            ),
+        },
+        tags=["Cours"],
+    )
+    def get(self, request, id_cours):
+        try:
+            course = Course.objects.get(id=id_cours)
+            serializer = CourseSerializer(course, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Course.DoesNotExist:
+            return Response({'erreur': 'Cours non trouvé'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'erreur': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

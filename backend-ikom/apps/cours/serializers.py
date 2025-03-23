@@ -13,22 +13,19 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         request = self.context.get('request')
-        validated_data['user'] = request.user  # Associer l'utilisateur connecté
+        validated_data['user'] = request.user
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
-        # Vérifier qu'il y a au moins une étape et une interrogation associée au cours
         if not Etape.objects.filter(cours=instance).exists():
             raise serializers.ValidationError("Le cours doit avoir au moins une étape.")
         
         if not Interrogation.objects.filter(cours=instance).exists():
             raise serializers.ValidationError("Le cours doit avoir au moins une interrogation.")
 
-        # Si les conditions sont remplies, mettre à jour le statut de publication
         instance.status = "Published"
         instance.save()
         return instance
-    
 
 class EtapeSerializer(serializers.ModelSerializer):
     document_url = serializers.SerializerMethodField()
@@ -43,7 +40,7 @@ class EtapeSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Etape
-        fields = ['id', 'cours', 'titre', "document",'document_url', "video", 'video_url', 'ordre']
+        fields = ['id', 'cours', 'titre', "document",'document_url', "video", 'video_url', 'ordre', 'video_content']
 
     def validate_document(self, value):
         # Valider que le document est un fichier PDF si fourni
