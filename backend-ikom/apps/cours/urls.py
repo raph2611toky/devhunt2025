@@ -1,13 +1,20 @@
 from django.urls import path
-from apps.cours.views import CourseCreateAPIView, EtapeCreateAPIView, EtapeListAPIView, InterrogationCreateAPIView, InterrogationListAPIView, CoursePublishAPIView
+from django.conf import settings
+from django.conf.urls.static import static
+from apps.cours.views import CourseCreateAPIView, EtapeCreateAPIView, EtapeListAPIView, InterrogationCreateAPIView, InterrogationListAPIView, CoursePublishAPIView,\
+     CourseListAPIView, CourseDetailAPIView
 
 
 urlpatterns = [
-    path('create', CourseCreateAPIView.as_view(), name='course-create'),
-    path('etapes/', EtapeCreateAPIView.as_view(), name='etape-create'),
-    path('etapes/<int:cours_id>/', EtapeListAPIView.as_view(), name='etape-list'), 
-    path('interrogations/', InterrogationCreateAPIView.as_view(), name='interrogation-create'),
-    path('interrogations/<int:etape_id>/', InterrogationListAPIView.as_view(), name='interrogation-list'), 
-    path('publier/', CoursePublishAPIView.as_view(), name='cours-publier'),
-    
+    path('cours/create/', CourseCreateAPIView.as_view(), name='course-create'),
+    path('cours/etapes/create/', EtapeCreateAPIView.as_view(), name='etape-create'),
+    path('cours/etapes/<int:cours_id>/', EtapeListAPIView.as_view(), name='etape-list'), 
+    path('cours/interrogations/', InterrogationCreateAPIView.as_view(), name='interrogation-create'),
+    path('cours/interrogations/<int:etape_id>/', InterrogationListAPIView.as_view(), name='interrogation-list'), 
+    path('cours/publier/', CoursePublishAPIView.as_view(), name='cours-publier'),
+    path('cours/list/', CourseListAPIView.as_view(), name="list all courses"),
+    path('cours/details/<int:id_cours>/', CourseDetailAPIView.as_view(), name="cours details"),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

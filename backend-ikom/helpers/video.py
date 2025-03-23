@@ -16,7 +16,6 @@ def voice_to_text(audio_file, model_size="medium", language="fr"):
         result = model.transcribe(audio_file, language=language)
         
         text = result["text"]
-        print(f"Texte transcrit : {text}")
         return text
 
     except Exception as e:
