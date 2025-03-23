@@ -5,6 +5,7 @@ import pytesseract
 import cv2
 import traceback
 import os
+from pdf2image import convert_from_path
 import face_recognition
 import datetime
 
@@ -271,3 +272,33 @@ def compare_faces(saved_image_path, selfie_image_path, threshold=0.5):
         print(f"Error in face comparison: {str(e)}")
         print(traceback.format_exc())
         return False, None
+
+def pdf_to_text(pdf_path, lang="fra"):
+    try:
+        pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+        if not os.path.exists(pdf_path):
+            print(f"Erreur : Le fichier {pdf_path} n’existe pas.")
+            return None
+        print(f"Conversion du PDF {pdf_path} en images...")
+        pages = convert_from_path(pdf_path, dpi=300)
+        full_text = ""
+
+        for i, page in enumerate(pages):
+            print(f"Traitement de la page {i + 1}...")
+            image_arr = np.asarray(page)
+            gray_image = cv2.cvtColor(image_arr, cv2.COLOR_RGB2GRAY)
+            denoised_image = cv2.fastNlMeansDenoising(gray_image, None, 30, 7, 21)
+            adaptive_thresh_image = cv2.adaptiveThreshold(
+                denoised_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+            )
+
+            text = pytesseract.image_to_string(adaptive_thresh_image, lang=lang)
+            full_text += f"\n--- Page {i + 1} ---\n{text}"
+
+        print("Extraction du texte terminée.")
+        return full_text.strip() if full_text else None
+
+    except Exception as e:
+        print(f"Erreur lors de l’extraction du texte du PDF : {str(e)}")
+        print(traceback.format_exc())
+        return None
