@@ -41,16 +41,26 @@ class DynamicSignLanguageConverter:
             "grand": self.is_big_gesture,
             "petit": self.is_small_gesture,
             "question": self.is_question_gesture,
-            "matin": self.is_morning_gesture,  # Nouveau
-            "soir": self.is_evening_gesture,  # Nouveau
-            "soleil": self.is_sun_gesture,  # Nouveau
-            "pluie": self.is_rain_gesture,  # Nouveau
-            "chien": self.is_dog_gesture,  # Nouveau
-            "chat": self.is_cat_gesture,  # Nouveau
-            "musique": self.is_music_gesture,  # Nouveau
-            "courir": self.is_run_gesture,  # Nouveau
-            "dormir": self.is_sleep_gesture,  # Nouveau
-            "heureux": self.is_happy_gesture  # Nouveau
+            "matin": self.is_morning_gesture,
+            "soir": self.is_evening_gesture,
+            "soleil": self.is_sun_gesture,
+            "pluie": self.is_rain_gesture,
+            "chien": self.is_dog_gesture,
+            "chat": self.is_cat_gesture,
+            "musique": self.is_music_gesture,
+            "courir": self.is_run_gesture,
+            "dormir": self.is_sleep_gesture,
+            "heureux": self.is_happy_gesture,
+            "demain": self.is_tomorrow_gesture,  # Nouveau
+            "hier": self.is_yesterday_gesture,  # Nouveau
+            "maintenant": self.is_now_gesture,  # Nouveau
+            "argent": self.is_money_gesture,  # Nouveau
+            "arbre": self.is_tree_gesture,  # Nouveau
+            "fleur": self.is_flower_gesture,  # Nouveau
+            "oiseau": self.is_bird_gesture,  # Nouveau
+            "marcher": self.is_walk_gesture,  # Nouveau
+            "s_asseoir": self.is_sit_gesture,  # Nouveau
+            "se_lever": self.is_stand_gesture  # Nouveau
         }
 
     def process_frame(self, frame):
@@ -550,9 +560,121 @@ class DynamicSignLanguageConverter:
                 wrist_right_end[1] < wrist_right_start[1] - 0.05 and  # montée
                 wrist_left_end[1] < 0.4 and wrist_right_end[1] < 0.4)  # près du visage
 
+    def is_tomorrow_gesture(self, sequence):
+        """'Demain' : main qui avance près du visage"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        wrist_start = sequence[0][0][0]
+        wrist_end = sequence[-1][0][0]
+        return (wrist_start[1] < 0.4 and wrist_end[1] < 0.4 and  # près du visage
+                wrist_end[0] > wrist_start[0] + 0.1 and  # avance vers la droite
+                abs(wrist_end[1] - wrist_start[1]) < 0.05)  # même hauteur
+
+    def is_yesterday_gesture(self, sequence):
+        """'Hier' : main qui recule près du visage"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        wrist_start = sequence[0][0][0]
+        wrist_end = sequence[-1][0][0]
+        return (wrist_start[1] < 0.4 and wrist_end[1] < 0.4 and  # près du visage
+                wrist_end[0] < wrist_start[0] - 0.1 and  # recule vers la gauche
+                abs(wrist_end[1] - wrist_start[1]) < 0.05)  # même hauteur
+
+    def is_now_gesture(self, sequence):
+        """'Maintenant' : main qui descend près du corps"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        wrist_start = sequence[0][0][0]
+        wrist_end = sequence[-1][0][0]
+        return (wrist_end[1] > wrist_start[1] + 0.1 and  # descente
+                wrist_end[1] > 0.6 and  # près du corps
+                abs(wrist_end[0] - wrist_start[0]) < 0.1)  # peu de mouvement horizontal
+
+    def is_money_gesture(self, sequence):
+        """'Argent' : main qui frotte les doigts près du menton"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        wrist_start = sequence[0][0][0]
+        thumb_tip_mid = sequence[self.sequence_length//2][0][4]
+        index_tip_mid = sequence[self.sequence_length//2][0][8]
+        return (wrist_start[1] < 0.5 and  # près du menton
+                abs(thumb_tip_mid[0] - index_tip_mid[0]) < 0.05 and  # doigts proches
+                abs(thumb_tip_mid[1] - index_tip_mid[1]) < 0.05)  # frottement
+
+    def is_tree_gesture(self, sequence):
+        """'Arbre' : main qui monte avec doigts écartés"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        wrist_start = sequence[0][0][0]
+        wrist_end = sequence[-1][0][0]
+        index_tip_end = sequence[-1][0][8]
+        middle_tip_end = sequence[-1][0][12]
+        return (wrist_end[1] < wrist_start[1] - 0.1 and  # montée
+                abs(index_tip_end[0] - middle_tip_end[0]) > 0.1 and  # doigts écartés
+                wrist_end[1] < 0.6)  # hauteur moyenne
+
+    def is_flower_gesture(self, sequence):
+        """'Fleur' : main qui s'ouvre près du nez"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        index_tip_start = sequence[0][0][8]
+        middle_tip_start = sequence[0][0][12]
+        index_tip_end = sequence[-1][0][8]
+        middle_tip_end = sequence[-1][0][12]
+        wrist_end = sequence[-1][0][0]
+        return (wrist_end[1] < 0.4 and  # près du nez
+                abs(index_tip_end[0] - middle_tip_end[0]) > abs(index_tip_start[0] - middle_tip_start[0]) + 0.1)  # doigts s'écartent
+
+    def is_bird_gesture(self, sequence):
+        """'Oiseau' : deux mains qui battent des ailes"""
+        if len(sequence) < self.sequence_length or not sequence[0] or not sequence[-1]:
+            return False
+        if len(sequence[0]) < 2 or len(sequence[-1]) < 2:
+            return False
+        wrist_left_positions = [frame[0][0][1] for frame in sequence if frame]
+        wrist_right_positions = [frame[1][0][1] for frame in sequence if frame]
+        mid_point = self.sequence_length // 2
+        return (max(wrist_left_positions[:mid_point]) > min(wrist_right_positions[:mid_point]) + 0.05 and  # alternance
+                max(wrist_right_positions[mid_point:]) > min(wrist_left_positions[mid_point:]) + 0.05)
+
+    def is_walk_gesture(self, sequence):
+        """'Marcher' : deux mains qui alternent lentement"""
+        if len(sequence) < self.sequence_length or not sequence[0] or not sequence[-1]:
+            return False
+        if len(sequence[0]) < 2 or len(sequence[-1]) < 2:
+            return False
+        wrist_left_start = sequence[0][0][0]
+        wrist_right_start = sequence[0][1][0]
+        wrist_left_end = sequence[-1][0][0]
+        wrist_right_end = sequence[-1][1][0]
+        return (wrist_left_end[1] > wrist_left_start[1] + 0.05 and  # descente lente
+                wrist_right_end[1] < wrist_right_start[1] - 0.05 and  # montée opposée
+                abs(wrist_left_end[0] - wrist_right_end[0]) < 0.2)  # proche horizontalement
+
+    def is_sit_gesture(self, sequence):
+        """'S'asseoir' : main qui descend et reste basse"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        wrist_start = sequence[0][0][0]
+        wrist_mid = sequence[self.sequence_length//2][0][0]
+        wrist_end = sequence[-1][0][0]
+        return (wrist_mid[1] > wrist_start[1] + 0.1 and  # descente
+                abs(wrist_end[1] - wrist_mid[1]) < 0.05 and  # reste stable
+                wrist_end[1] > 0.7)  # près du bas
+
+    def is_stand_gesture(self, sequence):
+        """'Se lever' : main qui monte depuis le bas"""
+        if len(sequence) < self.sequence_length or not sequence[0]:
+            return False
+        wrist_start = sequence[0][0][0]
+        wrist_end = sequence[-1][0][0]
+        return (wrist_end[1] < wrist_start[1] - 0.1 and  # montée
+                wrist_start[1] > 0.7 and  # commence bas
+                abs(wrist_end[0] - wrist_start[0]) < 0.1)  # peu de mouvement horizontal
+
 def main():
     converter = DynamicSignLanguageConverter(sequence_length=10)
-    video_path = "test1.mp4"
+    video_path = "test.mp4"
     result = converter.video_to_text(video_path)
     print(f"Texte traduit : {result}")
 
