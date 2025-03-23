@@ -122,7 +122,6 @@ def video_to_subtitled_video(video_path, output_video_path="../media/output_with
         audio_file = extract_audio_from_video(video_path)
         if not audio_file:
             return
-
         segments = voice_to_text_with_timestamps(audio_file)
         if not segments:
             return
@@ -136,3 +135,4 @@ def video_to_subtitled_video(video_path, output_video_path="../media/output_with
     except Exception as e:
         print(f"Erreur générale : {str(e)}")
         print(traceback.format_exc())
+        

@@ -34,16 +34,26 @@ def generer_texte(texte_entree, modele="mistral", max_tokens=100, temperature=0.
     except Exception as e:
         return f"Erreur lors de la génération : {str(e)}"
 
-async def generer_texte_stream_websocket(texte_entree, modele="mistral", send_callback=None):
-    stream = ollama.generate(model=modele, prompt=texte_entree, stream=True)
-    resultat = ""
-    for chunk in stream:
-        morceau = chunk['response']
-        resultat += morceau
-        if send_callback:
-            await send_callback(morceau)  # Envoyer chaque morceau via le callback
-        await asyncio.sleep(0.01)  # Petite pause pour éviter de surcharger
-    return resultat
+async def generer_texte_stream_websocket(texte_entree, modele="miketrika_mistral_raw", send_callback=None):
+    prompt_francais = f"Réponds en français : {texte_entree}"
+    flux = ollama.generate(model=modele, prompt=prompt_francais, stream=True)
+    
+    texte_accumule = ""
+    ponctuations = ".!?,;:"
+    
+    for morceau in flux:
+        contenu = morceau['response']
+        texte_accumule += contenu
+        
+        if contenu and contenu[-1] in ponctuations:
+            if send_callback:
+                await send_callback(texte_accumule)
+            texte_accumule = ""
+        
+        await asyncio.sleep(0.01)
+    if texte_accumule and send_callback:
+        await send_callback(texte_accumule)
+    return texte_accumule
 
 def ajouter_document(fichier_path):
     with open(fichier_path, 'r', encoding='utf-8') as f:
@@ -59,28 +69,3 @@ def recuperer_contexte(query, top_k=3):
     result = table.search(query_embedding).limit(top_k).to_list()
     return [doc["text"] for doc in result]
 
-async def generer_texte_avec_contexte_websocket(texte_entree, modele="mistral", max_tokens=150, temperature=0.7, send_callback=None):
-    contexte = recuperer_contexte(texte_entree)
-    contexte_texte = "\n".join(contexte) if contexte else "Aucun contexte disponible."
-    
-    prompt = f"Contexte :\n{contexte_texte}\n\nQuestion : {texte_entree}"
-    
-    stream = ollama.generate(
-        model=modele,
-        prompt=prompt,
-        stream=True,
-        options={
-            "num_predict": max_tokens,
-            "temperature": temperature
-        }
-    )
-    
-    resultat = ""
-    for chunk in stream:
-        morceau = chunk['response']
-        resultat += morceau
-        if send_callback:
-            await send_callback(morceau)
-        await asyncio.sleep(0.008)
-    
-    return resultat.strip()
