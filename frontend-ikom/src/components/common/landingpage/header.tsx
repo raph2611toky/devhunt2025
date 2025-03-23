@@ -1,10 +1,11 @@
-"use client"
+'use client';
 import React, { useEffect, useRef } from 'react';
 import CustomContainer from '../custom-container';
 import MenuNavigation from './menu';
 import gsap from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const LandingHeader = () => {
   const elRef = useRef<HTMLDivElement>(null);
@@ -22,7 +23,7 @@ const LandingHeader = () => {
     });
   }, []);
   return (
-    <CustomContainer className="mt-[52px]">
+    <CustomContainer className="mt-[52px] relative">
       <div
         ref={elRef}
         className="w-full flex items-center justify-between translate-y-[-100%] opacity-0"

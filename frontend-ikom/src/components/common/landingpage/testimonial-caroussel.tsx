@@ -16,7 +16,7 @@ const reviews: Review[] = [
     handle: 'nic67',
     rating: 5,
     comment:
-      'Easy and simple to use. The workout programs are easy to follow and results are visible in just a couple of weeks!',
+      "Merci pour le plateforme, c'est très utile! J'ai pu m'amelioré en communication avec tous!",
     date: '20 Mar, 2024',
     avatar: '/assets/images/f1.png',
     color: getRandomThemeColor(),
@@ -27,7 +27,7 @@ const reviews: Review[] = [
     handle: 'sarahj',
     rating: 5,
     comment:
-      'Incredible platform! The interface is intuitive and the results speak for themselves.',
+      "C'est très instructif et en même temps amusant !",
     date: '19 Mar, 2024',
     avatar: '/assets/images/f1.png',
     color: getRandomThemeColor(),
@@ -38,7 +38,7 @@ const reviews: Review[] = [
     handle: 'mikep',
     rating: 5,
     comment:
-      "Best fitness app I've ever used. The personalized programs are amazing!",
+      "J'aime l'application, je donne une pouce, ça marche vachement bien!",
     date: '18 Mar, 2024',
     avatar: '/assets/images/f1.png',
     color: getRandomThemeColor(),
@@ -49,7 +49,7 @@ const reviews: Review[] = [
     handle: 'rjh',
     rating: 5,
     comment:
-      "Best fitness app I've ever used. The personalized programs are amazing!",
+      "C'était une grande opportunité d'avaoir pu utiliser cette application!",
     date: '18 Mar, 2024',
     avatar: '/assets/images/f1.png',
     color: getRandomThemeColor(),

@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import useSocket from '@/hooks/useSoket';
+import Image from 'next/image';
 
 export default function Home() {
   const { isConnected, messages, sendMessage, onEvent } = useSocket(
@@ -46,6 +47,13 @@ export default function Home() {
 
   return (
     <div className="w-full min-h-screen max-h-fit overflow-hidden bg-white text-black">
+      <Image
+        alt="img-top-r"
+        src={'/assets/images/overlay-r.png'}
+        width={500}
+        height={500}
+        className="absolute z-[0] top-0 right-0"
+      />
       <LandingHeader />
       <HeroSection />
       <LandingMarquee />

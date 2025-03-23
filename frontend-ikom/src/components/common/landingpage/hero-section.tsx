@@ -4,6 +4,7 @@ import CustomContainer from '../custom-container';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/all';
 import { MouseIcon } from 'lucide-react';
+import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -85,6 +86,13 @@ const HeroSection = () => {
 
   return (
     <CustomContainer className="flex flex-col pt-[100px] items-center justify-center gap-[45px]">
+      <Image
+        alt="img-top-r"
+        src={'/assets/images/overlay-l.png'}
+        width={500}
+        height={500}
+        className="absolute z-[0] bottom-[-50px] left-0"
+      />
       <h1
         ref={hText}
         className="font-power-gotesk font-semibold text-[32px] text-deep-navy text-center translate-y-[60px] opacity-0"

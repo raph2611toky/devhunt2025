@@ -148,8 +148,8 @@ const Gallery = () => {
           Vidéos Démonstratives
         </span>
         <h1 className="text-[40px] max-w-[800px] mb-20">
-          <span className="bg-yellow ">Démonstrations en</span> vidéos des
-          outils pour l’éducation adaptée.
+          <span className="bg-yellow ">Une plateforme</span> e-learning inclusive
+          pour les personnes en situation d'handicap.
         </h1>
       </div>
       <div className="relative">

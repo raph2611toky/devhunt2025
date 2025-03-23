@@ -53,7 +53,7 @@ export default function MenuNavigation() {
   return (
     <div
       ref={containerRef}
-      className="relative h-[46px] w-[45px] overflow-hidden rounded-lg bg-yellow border-[2px] border-black"
+      className="relative h-[46px] w-[45px] overflow-hidden rounded-lg bg-yellow border border-black"
     >
       <div
         className="absolute z-10 flex items-center justify-center bg-black rounded-3xl transition-all duration-300 ease-in-out"

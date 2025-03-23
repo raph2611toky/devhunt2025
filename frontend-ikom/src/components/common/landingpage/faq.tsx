@@ -120,10 +120,23 @@ const Faq = () => {
               <FaqTag text="Appartement" />
             </div>
           </div>
-          <FaqItem title="Question 1" text="Voici la description du text-1" />
-          <FaqItem title="Question 2" text="Voici la description du text-2" />
-          <FaqItem title="Question 3" text="Voici la description du text-3" />
-          <FaqItem title="Question 4" text="Voici la description du text-4" />
+          <FaqItem
+            title="Comment ça marche?"
+            text="Lorem ipsum dolor sit amet consectetur adipisicing elit."
+          />
+          <FaqItem
+            title="Qui peut l'utiliser?"
+            text="Illo natus, inventore nihil sunt libero quas?"
+          />
+          <FaqItem
+            title="Est-ce gratuit ?"
+            text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium accusamus rem tempora."
+          />
+
+          <FaqItem
+            title="Ca marche bien?"
+            text="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Enim, inventore?"
+          />
         </div>
       </div>
     </CustomContainer>
