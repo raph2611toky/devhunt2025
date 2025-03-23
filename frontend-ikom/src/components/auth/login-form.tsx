@@ -117,6 +117,7 @@ export default function LoginForm() {
                 </>
               ) : (
                 <FacialRecognition
+                type="login"
                   onComplete={() => console.log("Facial recognition complete")}
                 />
               )}

@@ -1,15 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { Camera, Check, X } from "lucide-react";
 import Image from "next/image";
+import { login, register } from "@/lib/services/auth/auth";
+import axios from "axios";
 
 interface FacialRecognitionProps {
   onComplete: (success: boolean) => void;
+  type: "login" | "register";
+  setCinImage?: Dispatch<SetStateAction<string | File | null | undefined>>;
+  cinImage?: File | string | null;
 }
 
 export default function FacialRecognition({
   onComplete,
+  type,
+  setCinImage,
+  cinImage,
 }: FacialRecognitionProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -85,6 +93,7 @@ export default function FacialRecognition({
 
         const imageData = canvas.toDataURL("image/jpeg");
         setCapturedImage(imageData);
+        if (setCinImage) setCinImage(imageData);
         setScanComplete(true);
         stopCamera();
         verifyImage(imageData);
@@ -92,14 +101,62 @@ export default function FacialRecognition({
     }
   };
 
+  const dataURLtoBlob = (dataURL: string) => {
+    const arr = dataURL.split(",");
+    const mime = arr[0].match(/:(.*?);/)![1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  };
+
   const verifyImage = async (imageData: string) => {
-    setIsLoading(true); // Afficher le loader
+    setIsLoading(true);
 
     try {
-      // Simulation d'une requête backend (remplacez par un vrai appel API)
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simuler un délai de 2 secondes
+      const imageBlob = dataURLtoBlob(imageData);
+      const formData = new FormData();
+      formData.append("face_image", imageBlob, "captured-image.jpg");
+      formData.append("email", "exemple@gmail.com");
 
-      // Simuler une vérification (70% de chance de succès)
+      if (type === "login") {
+        console.log("Loginnn...");
+        await axios
+          .post(`${process.env.NEXT_PUBLIC_API_URL}/login/face/`, formData, {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        if (cinImage) {
+          if (typeof cinImage === "string") {
+            const cinImageBlob = dataURLtoBlob(cinImage);
+            formData.append("cin_image", cinImageBlob, "cin-image.jpg");
+            console.log(cinImageBlob);
+          } else if (cinImage instanceof File) {
+            formData.append("cin_image", cinImage);
+          }
+        } else {
+          throw new Error("Aucune image CIN fournie");
+        }
+        console.log(imageBlob);
+        console.log("Registerrr...");
+
+        const response = await register(formData);
+
+        console.log(response);
+      }
+
       const isValid = Math.random() > 0.3;
 
       setIsLoading(false);

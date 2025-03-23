@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { CreditCard, Check, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
+type CinImage = File | string | null;
+
 interface IdScannerProps {
   onComplete: (isValid: boolean) => void;
+  setCinImage: Dispatch<SetStateAction<string | File | null | undefined>>;
 }
 
-export default function IdScanner({ onComplete }: IdScannerProps) {
+export default function IdScanner({ onComplete, setCinImage }: IdScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -59,6 +62,7 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
         canvas.height = video.videoHeight;
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         const imageData = canvas.toDataURL("image/jpeg");
+        setCinImage(imageData);
         setPreviewImage(imageData);
         startProcessing(imageData);
       }
@@ -68,6 +72,7 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setCinImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         const imageData = e.target?.result as string;
@@ -85,7 +90,7 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
         if (newProgress >= 100) {
           clearInterval(interval);
           setScanComplete(true);
-          verifyImage(imageData); // Vérifier l'image après la fin de l'animation
+          verifyImage(imageData);
         }
         return newProgress >= 100 ? 100 : newProgress;
       });
@@ -97,7 +102,7 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
     try {
       // Simulation d'une vérification avec une API (remplacez par une vraie API)
       await new Promise((resolve) => setTimeout(resolve, 2000)); // Délai de 2 secondes
-      const isValid = Math.random() > 0.3; // 70% de chance de succès (simulation)
+      const isValid = true; // 70% de chance de succès (simulation)
 
       setIsVerifying(false);
       setVerificationResult(isValid);

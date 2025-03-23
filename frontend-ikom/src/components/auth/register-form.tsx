@@ -12,6 +12,7 @@ export default function RegisterForm() {
     "intro" | "scan-id" | "scan-face" | "complete" | "error"
   >("intro");
   const [idData, setIdData] = useState<null | { valid: boolean }>(null);
+  const [cinImage, setCinImage] = useState<File | string | null>();
 
   const handleIdScanComplete = (isValid: boolean) => {
     setIdData({ valid: isValid });
@@ -35,7 +36,8 @@ export default function RegisterForm() {
       <div className="w-full max-w-md">
         <Link
           href="/"
-          className="inline-flex items-center text-white mb-6 hover:text-yellow transition-colors">
+          className="inline-flex items-center text-white mb-6 hover:text-yellow transition-colors"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to home
         </Link>
@@ -43,7 +45,7 @@ export default function RegisterForm() {
         <div className="bg-light-grey border-2 border-soft-black  p-6 rounded-lg">
           <h1 className="text-3xl font-black text-soft-black mb-6">REGISTER</h1>
 
-          {registrationStep === "intro" && (
+          {registrationStep === 'intro' && (
             <div className="space-y-6">
               <div className="bg-yellow/30 border-2 border-soft-black p-4 rounded-md">
                 <h3 className="font-bold text-soft-black mb-2">
@@ -80,14 +82,15 @@ export default function RegisterForm() {
               </div>
 
               <Button
-                onClick={() => setRegistrationStep("scan-id")}
-                className="w-full h-12 bg-blue hover:bg-blue/90 text-soft-black font-bold border-2 border-soft-black  rounded-md transition-transform hover:-translate-y-1">
+                onClick={() => setRegistrationStep('scan-id')}
+                className="w-full h-12 bg-blue hover:bg-blue/90 text-soft-black font-bold border-2 border-soft-black  rounded-md transition-transform hover:-translate-y-1"
+              >
                 Start Registration
               </Button>
             </div>
           )}
 
-          {registrationStep === "scan-id" && (
+          {registrationStep === 'scan-id' && (
             <div className="space-y-6">
               <div className="bg-yellow/30 border-2 border-soft-black p-4 rounded-md">
                 <div className="flex items-start space-x-3">
@@ -103,11 +106,14 @@ export default function RegisterForm() {
                 </div>
               </div>
 
-              <IdScanner onComplete={handleIdScanComplete} />
+              <IdScanner
+                onComplete={handleIdScanComplete}
+                setCinImage={setCinImage}
+              />
             </div>
           )}
 
-          {registrationStep === "scan-face" && (
+          {registrationStep === 'scan-face' && (
             <div className="space-y-6">
               <div className="bg-violet/30 border-2 border-soft-black p-4 rounded-md">
                 <div className="flex items-start space-x-3">
@@ -124,12 +130,15 @@ export default function RegisterForm() {
               </div>
 
               <FacialRecognition
+                type="register"
                 onComplete={() => handleFacialScanComplete(true)}
+                setCinImage={setCinImage}
+                cinImage={cinImage}
               />
             </div>
           )}
 
-          {registrationStep === "complete" && (
+          {registrationStep === 'complete' && (
             <div className="space-y-6 text-center">
               <div className="bg-green/20 border-2 border-green p-6 rounded-md">
                 <div className="flex flex-col items-center">
@@ -153,7 +162,7 @@ export default function RegisterForm() {
             </div>
           )}
 
-          {registrationStep === "error" && (
+          {registrationStep === 'error' && (
             <div className="space-y-6 text-center">
               <div className="bg-rose/20 border-2 border-rose p-6 rounded-md">
                 <div className="flex flex-col items-center">
@@ -165,29 +174,31 @@ export default function RegisterForm() {
                   </h3>
                   <p className="text-grey mt-2">
                     {idData === null
-                      ? "An error occurred during registration"
+                      ? 'An error occurred during registration'
                       : !idData.valid
                       ? "Your ID card couldn't be verified"
-                      : "Facial recognition failed"}
+                      : 'Facial recognition failed'}
                   </p>
                 </div>
               </div>
 
               <Button
-                onClick={() => setRegistrationStep("intro")}
-                className="w-full h-12 bg-soft-black hover:bg-soft-black/90 text-white font-bold border-2 border-soft-black  rounded-md transition-transform hover:-translate-y-1">
+                onClick={() => setRegistrationStep('intro')}
+                className="w-full h-12 bg-soft-black hover:bg-soft-black/90 text-white font-bold border-2 border-soft-black  rounded-md transition-transform hover:-translate-y-1"
+              >
                 Try Again
               </Button>
             </div>
           )}
 
-          {registrationStep !== "complete" && registrationStep !== "error" && (
+          {registrationStep !== 'complete' && registrationStep !== 'error' && (
             <div className="mt-6 pt-6 border-t-2 border-soft-grey text-center">
               <p className="text-soft-black">
-                Already have an account?{" "}
+                Already have an account?{' '}
                 <Link
                   href="/login"
-                  className="text-blue font-bold hover:underline">
+                  className="text-blue font-bold hover:underline"
+                >
                   Login now
                 </Link>
               </p>
