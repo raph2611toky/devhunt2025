@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
@@ -10,10 +11,8 @@ import {
   Award,
   HelpCircle,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function CourseRoadmap({ params }: { params: { id: string } }) {
-  const router = useRouter();
   const [showHelp, setShowHelp] = useState(false);
 
   const course = {
@@ -75,82 +74,79 @@ export default function CourseRoadmap({ params }: { params: { id: string } }) {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-light-grey to-blue/20 text-soft-black">
-      {/* En-tête */}
-      <header className="py-8  mb-6">
-        <div className="container px-4 mx-auto max-w-5xl">
-          <Button
-            onClick={() => router.back()}
-            className="inline-flex items-center text-blue hover:text-yellow mb-6 transition-all duration-300 hover:scale-105 bg-white px-4 py-2 rounded-xl border border-blue">
-            <ArrowLeft className="mr-2 h-5 w-5" />
-            Retour aux cours
-          </Button>
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl bg-gray-100 border-[.15rem] border-black p-6">
+        {/* En-tête */}
+        <header className="mb-6">
+          <Link href={`/courses/${params.id}`}>
+            <Button className="inline-flex items-center bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black mb-6 hover:-translate-y-1 transition-transform">
+              <ArrowLeft className="mr-2 h-5 w-5" />
+              Retour au cours
+            </Button>
+          </Link>
+          <h1 className="text-4xl font-extrabold text-black mb-2">
+            {course.title}
+          </h1>
+          <p className="text-xl font-bold text-black">
+            VOTRE PARCOURS D'APPRENTISSAGE
+          </p>
+        </header>
 
-          <div className="bg-white rounded-3xl p-6 border border-soft-grey">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-soft-black mb-2">
-              {course.title}
-            </h1>
-            <p className="text-grey text-lg">Votre parcours d'apprentissage</p>
-          </div>
-        </div>
-      </header>
-
-      {/* Bento Grid */}
-      <div className="container mx-auto max-w-5xl px-4 pb-16">
+        {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Progression */}
-          <div className="md:col-span-2 bg-green/20 rounded-3xl p-6 border-2 border-green">
-            <h2 className="text-xl font-bold text-soft-black mb-4">
-              Votre progression
+          <div className="md:col-span-2 bg-yellow border-2 border-black p-6">
+            <h2 className="text-xl font-extrabold text-black mb-4">
+              VOTRE PROGRESSION
             </h2>
             <div className="flex items-center gap-3 mb-2">
-              <div className="flex-grow h-4 bg-white rounded-full overflow-hidden">
+              <div className="flex-grow h-4 bg-white border-2 border-black overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-blue to-green rounded-full transition-all duration-500"
+                  className="h-full bg-black"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
-              <span className="font-extrabold text-2xl text-soft-black">
+              <span className="font-extrabold text-2xl text-black">
                 {progressPercentage}%
               </span>
             </div>
-            <p className="mt-2 text-center text-grey">
+            <p className="mt-2 text-center text-black font-bold">
               {completedLessons} leçons terminées sur {totalLessons}
             </p>
           </div>
 
           {/* Aide */}
-          <div className="bg-yellow/20 rounded-3xl p-6 border-2 border-yellow">
+          <div className="bg-gray-200 border-2 border-black p-6">
             <Button
               variant="outline"
               size="lg"
-              className="w-full flex items-center justify-center gap-2 bg-white border-yellow text-yellow hover:bg-yellow/10 font-bold"
+              className="w-full flex items-center justify-center gap-2 bg-white border-2 border-black text-black hover:bg-yellow font-bold hover:-translate-y-1 transition-transform"
               onClick={() => setShowHelp(!showHelp)}>
               <HelpCircle className="h-5 w-5" />
-              <span>Comment utiliser la roadmap ?</span>
+              <span>COMMENT UTILISER LA ROADMAP ?</span>
             </Button>
 
             {showHelp && (
-              <div className="mt-4 p-4 bg-white rounded-xl border border-yellow">
-                <h3 className="font-bold mb-2 text-soft-black">
-                  Comment utiliser la roadmap :
+              <div className="mt-4 p-4 bg-white border-2 border-black">
+                <h3 className="font-extrabold text-black mb-2">
+                  COMMENT UTILISER LA ROADMAP :
                 </h3>
-                <ul className="space-y-2 text-grey pl-5">
+                <ul className="space-y-2 text-black font-bold pl-5">
                   <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-green flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-black flex-shrink-0" />
                     <span>Modules terminés</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Play className="h-4 w-4 text-blue flex-shrink-0" />
+                    <Play className="h-4 w-4 text-black flex-shrink-0" />
                     <span>Modules en cours</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-grey flex-shrink-0" />
+                    <Lock className="h-4 w-4 text-black flex-shrink-0" />
                     <span>Modules verrouillés</span>
                   </li>
                 </ul>
                 <Button
-                  className="mt-4 bg-yellow hover:bg-yellow/90 text-soft-black font-bold"
+                  className="mt-4 bg-yellow hover:bg-yellow/80 text-black font-bold border-2 border-black hover:-translate-y-1 transition-transform"
                   onClick={() => setShowHelp(false)}>
                   Fermer l'aide
                 </Button>
@@ -162,23 +158,22 @@ export default function CourseRoadmap({ params }: { params: { id: string } }) {
         {/* Roadmap visuelle */}
         <div className="space-y-6">
           {course.modules.map((module, moduleIndex) => (
-            <div
-              key={moduleIndex}
-              className={`rounded-3xl overflow-hidden border-2 ${
-                module.completed
-                  ? "bg-green/20 border-green"
-                  : module.locked
-                  ? "bg-soft-grey/20 border-soft-grey"
-                  : "bg-blue/20 border-blue"
-              }`}>
-              <div className="p-6 flex items-center gap-4">
+            <div key={moduleIndex} className={`bg-white border-2 border-black`}>
+              <div
+                className={`p-6 flex items-center gap-4 ${
+                  module.completed
+                    ? "bg-yellow border-b-2 border-black"
+                    : module.locked
+                    ? "bg-gray-200 border-b-2 border-black"
+                    : "bg-black border-b-2 border-yellow"
+                }`}>
                 <div
-                  className={`w-14 h-14 rounded-full flex items-center justify-center ${
+                  className={`w-14 h-14 rounded-full flex items-center justify-center border-2 border-black ${
                     module.completed
-                      ? "bg-green/30 text-green"
+                      ? "bg-white text-black"
                       : module.locked
-                      ? "bg-soft-grey/30 text-grey"
-                      : "bg-blue/30 text-blue"
+                      ? "bg-gray-300 text-black"
+                      : "bg-yellow text-black"
                   }`}>
                   {module.completed ? (
                     <CheckCircle className="h-7 w-7" />
@@ -190,10 +185,20 @@ export default function CourseRoadmap({ params }: { params: { id: string } }) {
                 </div>
 
                 <div className="flex-grow">
-                  <h3 className="text-xl font-bold text-soft-black">
+                  <h3
+                    className={`text-xl font-extrabold ${
+                      module.completed || module.locked
+                        ? "text-black"
+                        : "text-yellow"
+                    }`}>
                     Module {moduleIndex + 1}: {module.title}
                   </h3>
-                  <p className="text-grey">
+                  <p
+                    className={`${
+                      module.completed || module.locked
+                        ? "text-black"
+                        : "text-yellow"
+                    } font-bold`}>
                     {module.lessons.filter((l) => l.completed).length} /{" "}
                     {module.lessons.length} leçons terminées
                   </p>
@@ -204,8 +209,8 @@ export default function CourseRoadmap({ params }: { params: { id: string } }) {
                     size="lg"
                     className={`text-lg ${
                       module.completed
-                        ? "bg-green hover:bg-green/90 text-white border border-green"
-                        : "bg-blue hover:bg-blue/90 text-white border border-blue"
+                        ? "bg-yellow hover:bg-yellow/80 text-black border-2 border-black hover:-translate-y-1 transition-transform"
+                        : "bg-black hover:bg-gray-800 text-yellow border-2 border-yellow hover:-translate-y-1 transition-transform"
                     }`}
                     disabled={module.locked}>
                     {module.completed ? "Revoir" : "Continuer"}
@@ -214,15 +219,15 @@ export default function CourseRoadmap({ params }: { params: { id: string } }) {
               </div>
 
               {!module.locked && (
-                <div className="bg-white p-6 border-t border-soft-grey">
+                <div className="bg-white p-6">
                   <ul className="space-y-4">
                     {module.lessons.map((lesson, lessonIndex) => (
                       <li key={lessonIndex} className="flex items-center gap-3">
                         <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          className={`w-10 h-10 rounded-full flex items-center justify-center border-2 border-black ${
                             lesson.completed
-                              ? "bg-green/20 text-green"
-                              : "bg-blue/20 text-blue"
+                              ? "bg-yellow text-black"
+                              : "bg-white text-black"
                           }`}>
                           {lesson.completed ? (
                             <CheckCircle className="h-5 w-5" />
@@ -230,7 +235,7 @@ export default function CourseRoadmap({ params }: { params: { id: string } }) {
                             <Play className="h-5 w-5" />
                           )}
                         </div>
-                        <span className="text-lg text-soft-black">
+                        <span className="text-lg font-bold text-black">
                           {moduleIndex + 1}.{lessonIndex + 1} {lesson.title}
                         </span>
                       </li>
@@ -243,28 +248,32 @@ export default function CourseRoadmap({ params }: { params: { id: string } }) {
         </div>
 
         {/* Certification */}
-        <div className="mt-10 bg-yellow/20 rounded-3xl p-8 border border-yellow text-center">
+        <div className="mt-10 bg-black border-2 border-yellow p-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Award className="h-10 w-10 text-yellow" />
-            <h3 className="text-2xl font-extrabold text-soft-black">
-              Certificat de réussite
+            <h3 className="text-2xl font-extrabold text-yellow">
+              CERTIFICAT DE RÉUSSITE
             </h3>
           </div>
-          <p className="text-lg mb-6 text-grey">
+          <p className="text-lg font-bold text-yellow mb-6">
             Terminez tous les modules pour obtenir votre certificat !
           </p>
-          <div className="w-full bg-white h-4 rounded-full overflow-hidden">
+          <div className="w-full bg-white h-4 border-2 border-black overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-yellow to-yellow/70 rounded-full"
+              className="h-full bg-yellow"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
-          <p className="mt-2 text-lg text-soft-black">
+          <p className="mt-2 text-lg font-bold text-yellow">
             {progressPercentage}% complété
           </p>
           <Button
             size="lg"
-            className="mt-6 text-lg px-8 py-6 bg-yellow hover:bg-yellow/90 text-soft-black font-bold border border-yellow"
+            className={`mt-6 text-lg px-8 py-6 ${
+              progressPercentage < 100
+                ? "bg-gray-200 text-black border-2 border-black cursor-not-allowed"
+                : "bg-yellow hover:bg-yellow/80 text-black border-2 border-black hover:-translate-y-1 transition-transform"
+            }`}
             disabled={progressPercentage < 100}>
             {progressPercentage < 100
               ? "Certificat non disponible"

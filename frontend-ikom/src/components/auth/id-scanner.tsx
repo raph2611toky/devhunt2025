@@ -1,16 +1,18 @@
 "use client";
 
-import type React from "react";
-
-import { useEffect, useRef, useState } from "react";
-import { CreditCard, Check, Upload } from "lucide-react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { CreditCard, Check, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+
+type CinImage = File | string | null;
 
 interface IdScannerProps {
   onComplete: (isValid: boolean) => void;
+  setCinImage: Dispatch<SetStateAction<string | File | null | undefined>>;
 }
 
-export default function IdScanner({ onComplete }: IdScannerProps) {
+export default function IdScanner({ onComplete, setCinImage }: IdScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -19,6 +21,10 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
   const [scanProgress, setScanProgress] = useState(0);
   const [uploadMode, setUploadMode] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationResult, setVerificationResult] = useState<boolean | null>(
+    null
+  );
 
   useEffect(() => {
     if (!uploadMode) {
@@ -29,11 +35,7 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
           stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: "environment" },
           });
-
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-
+          if (videoRef.current) videoRef.current.srcObject = stream;
           setCameraActive(true);
         } catch (err) {
           console.error("Error accessing camera:", err);
@@ -44,9 +46,7 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
       startCamera();
 
       return () => {
-        if (stream) {
-          stream.getTracks().forEach((track) => track.stop());
-        }
+        if (stream) stream.getTracks().forEach((track) => track.stop());
       };
     }
   }, [uploadMode]);
@@ -58,15 +58,13 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
       const context = canvas.getContext("2d");
 
       if (context) {
-        // Set canvas dimensions to match video
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
-        // Draw the current video frame on the canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Start processing animation
-        startProcessing();
+        const imageData = canvas.toDataURL("image/jpeg");
+        setCinImage(imageData);
+        setPreviewImage(imageData);
+        startProcessing(imageData);
       }
     }
   };
@@ -74,35 +72,63 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setCinImage(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        setPreviewImage(e.target?.result as string);
-        startProcessing();
+        const imageData = e.target?.result as string;
+        setPreviewImage(imageData);
+        startProcessing(imageData);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const startProcessing = () => {
-    // Simulate processing with progress
+  const startProcessing = (imageData: string) => {
     const interval = setInterval(() => {
       setScanProgress((prev) => {
         const newProgress = prev + 2;
         if (newProgress >= 100) {
           clearInterval(interval);
-          setTimeout(() => {
-            setScanComplete(true);
-            onComplete(true); // Simulate successful validation
-          }, 500);
+          setScanComplete(true);
+          verifyImage(imageData);
         }
         return newProgress >= 100 ? 100 : newProgress;
       });
     }, 50);
   };
 
-  const triggerFileUpload = () => {
-    fileInputRef.current?.click();
+  const verifyImage = async (imageData: string) => {
+    setIsVerifying(true);
+    try {
+      // Simulation d'une vérification avec une API (remplacez par une vraie API)
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Délai de 2 secondes
+      const isValid = true; // 70% de chance de succès (simulation)
+
+      setIsVerifying(false);
+      setVerificationResult(isValid);
+
+      if (isValid) {
+        onComplete(true); // Passer au processus suivant uniquement si valide
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'image:", error);
+      setIsVerifying(false);
+      setVerificationResult(false);
+    }
   };
+
+  const resetScan = () => {
+    setScanProgress(0);
+    setScanComplete(false);
+    setPreviewImage(null);
+    setVerificationResult(null);
+    setIsVerifying(false);
+    if (!uploadMode && videoRef.current) {
+      setCameraActive(true); // Réactiver la caméra si en mode caméra
+    }
+  };
+
+  const triggerFileUpload = () => fileInputRef.current?.click();
 
   return (
     <div className="space-y-4">
@@ -119,12 +145,14 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
               }`}
             />
             <canvas ref={canvasRef} className="hidden" />
-
-            {/* ID card outline overlay */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div
                 className={`w-[85%] h-[70%] border-2 rounded-md transition-colors duration-300 ${
-                  scanComplete ? "border-green" : "border-yellow"
+                  verificationResult === null
+                    ? "border-yellow"
+                    : verificationResult
+                    ? "border-green"
+                    : "border-red"
                 }`}>
                 <div className="absolute top-0 left-0 w-full text-center -mt-6">
                   <span className="bg-light-grey px-2 text-xs text-soft-black">
@@ -133,8 +161,6 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
                 </div>
               </div>
             </div>
-
-            {/* Scanning animation */}
             {scanProgress > 0 && !scanComplete && (
               <div className="absolute inset-0 pointer-events-none">
                 <div
@@ -144,20 +170,30 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
                       scanProgress * 2.2
                     )}px)`,
                     transition: "transform 0.1s linear",
-                  }}></div>
+                  }}
+                />
               </div>
             )}
-
-            {/* Success overlay */}
-            {scanComplete && (
+            {scanComplete && isVerifying && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div className="bg-green rounded-full p-3">
-                  <Check className="h-8 w-8 text-white" />
+                <div className="text-white text-lg font-bold">
+                  Vérification en cours...
                 </div>
               </div>
             )}
-
-            {/* Capture button */}
+            {scanComplete && !isVerifying && verificationResult !== null && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                {verificationResult ? (
+                  <div className="bg-green rounded-full p-3">
+                    <Check className="h-8 w-8 text-white" />
+                  </div>
+                ) : (
+                  <div className="bg-red rounded-full p-3">
+                    <X className="h-8 w-8 text-white" />
+                  </div>
+                )}
+              </div>
+            )}
             {cameraActive && scanProgress === 0 && (
               <div className="absolute bottom-4 left-0 right-0 flex justify-center">
                 <Button
@@ -167,8 +203,6 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
                 </Button>
               </div>
             )}
-
-            {/* Upload alternative */}
             {cameraActive && scanProgress === 0 && (
               <div className="absolute top-2 right-2">
                 <Button
@@ -185,15 +219,15 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
           <div className="h-[220px] flex items-center justify-center">
             {previewImage ? (
               <div className="relative w-full h-full">
-                <img
-                  src={previewImage || "/placeholder.svg"}
+                <Image
+                  width={1000}
+                  height={1000}
+                  src={previewImage}
                   alt="ID Card"
                   className={`w-full h-full object-contain ${
                     scanProgress > 0 ? "opacity-70" : ""
                   }`}
                 />
-
-                {/* Scanning animation */}
                 {scanProgress > 0 && !scanComplete && (
                   <div className="absolute inset-0 pointer-events-none">
                     <div
@@ -203,18 +237,32 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
                           scanProgress * 2.2
                         )}px)`,
                         transition: "transform 0.1s linear",
-                      }}></div>
+                      }}
+                    />
                   </div>
                 )}
-
-                {/* Success overlay */}
-                {scanComplete && (
+                {scanComplete && isVerifying && (
                   <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-green rounded-full p-3">
-                      <Check className="h-8 w-8 text-white" />
+                    <div className="text-white text-lg font-bold">
+                      Vérification en cours...
                     </div>
                   </div>
                 )}
+                {scanComplete &&
+                  !isVerifying &&
+                  verificationResult !== null && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                      {verificationResult ? (
+                        <div className="bg-green rounded-full p-3">
+                          <Check className="h-8 w-8 text-white" />
+                        </div>
+                      ) : (
+                        <div className="bg-red rounded-full p-3">
+                          <X className="h-8 w-8 text-white" />
+                        </div>
+                      )}
+                    </div>
+                  )}
               </div>
             ) : (
               <div className="text-center p-6">
@@ -247,18 +295,39 @@ export default function IdScanner({ onComplete }: IdScannerProps) {
         <>
           <div className="h-2 w-full bg-light-grey rounded-full overflow-hidden">
             <div
-              className={`h-full ${scanComplete ? "bg-green" : "bg-yellow"}`}
+              className={`h-full ${
+                verificationResult === null
+                  ? "bg-yellow"
+                  : verificationResult
+                  ? "bg-green"
+                  : "bg-red"
+              }`}
               style={{ width: `${scanProgress}%` }}
             />
           </div>
-
           <div className="flex justify-between text-xs text-grey">
             <span>
-              {scanComplete ? "ID verified" : "Processing ID card..."}
+              {isVerifying
+                ? "Vérification en cours..."
+                : scanComplete && verificationResult === null
+                ? "Scan terminé"
+                : verificationResult
+                ? "ID vérifiée"
+                : verificationResult === false
+                ? "Échec de la vérification"
+                : "Traitement de l'image..."}
             </span>
             <span>{scanProgress}%</span>
           </div>
         </>
+      )}
+
+      {scanComplete && !isVerifying && verificationResult === false && (
+        <Button
+          onClick={resetScan}
+          className="w-full bg-red hover:bg-red/90 text-white font-bold border-2 border-soft-black shadow-[4px_4px_0px_#474747]">
+          Recommencer
+        </Button>
       )}
     </div>
   );

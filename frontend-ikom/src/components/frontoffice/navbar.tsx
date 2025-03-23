@@ -33,22 +33,18 @@ export default function Navbar() {
   };
 
   return (
-    <div className="bg-deep-navy/80 backdrop-blur-md border-b border-white/10 py-2 sticky top-0 z-50 shadow-lg">
+    <div className="bg-white border-b-[.15rem] border-black py-4 sticky top-0 z-50">
       <div className="container px-4 mx-auto max-w-6xl">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-10 w-10 rounded-full text-white hover:bg-white/10"></Button>
-
+          {/* Section gauche : Boutons de contrôle */}
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={activateVoiceReader}
               aria-label="Activer le lecteur vocal"
-              className="h-10 w-10 rounded-full text-white hover:bg-white/10">
-              <Volume2 className="h-5 w-5" />
+              className="h-12 w-12 bg-yellow border-2 border-black text-black hover:bg-yellow/80 hover:-translate-y-1 transition-transform">
+              <Volume2 className="h-6 w-6" />
             </Button>
 
             <Button
@@ -56,56 +52,54 @@ export default function Navbar() {
               size="sm"
               onClick={() => setShowHelp(!showHelp)}
               aria-label="Aide"
-              className="flex items-center gap-1 ml-2 rounded-full px-4 bg-yellow/20 border-yellow/30 text-white hover:bg-yellow/40">
-              <HelpCircle className="h-4 w-4" />
-              <span>Aide</span>
+              className="h-12 flex items-center gap-2 px-6 py-3 bg-yellow border-2 border-black text-black font-bold hover:bg-yellow/80 hover:-translate-y-1 transition-transform">
+              <HelpCircle className="h-5 w-5" />
+              <span>AIDE</span>
             </Button>
           </div>
 
-          {/* Section Profil */}
-          <div className="flex items-center gap-3">
-            <span className="text-white text-sm hidden md:block">
-              Jean Dupont
+          {/* Section droite : Profil */}
+          <div className="flex items-center gap-4">
+            <span className="text-black text-lg font-bold hidden md:block">
+              JEAN DUPONT
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-10 w-10 rounded-full p-0 hover:bg-white/10">
-                  <Avatar className="h-9 w-9 border-2 border-yellow/30">
+                  className="h-12 w-12 p-4 bg-yellow border border-black text-black hover:bg-yellow/80 hover:-translate-y-1 transition-transform">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage
-                      src="/placeholder.svg?height=36&width=36"
+                      src="/placeholder.svg?height=40&width=40"
                       alt="Photo de profil"
                     />
-                    <AvatarFallback className="bg-yellow/20 text-white">
+                    <AvatarFallback className=" text-black bg-yellow font-bold">
                       JD
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel className="font-normal">
+              <DropdownMenuContent className="w-56 bg-white border-[.15rem] border-black text-black">
+                <DropdownMenuLabel className="font-bold">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      Jean Dupont
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
+                    <p className="text-lg font-extrabold">Jean Dupont</p>
+                    <p className="text-sm text-gray-600">
                       jean.dupont@example.com
                     </p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Mon profil</span>
+                <DropdownMenuSeparator className="bg-yellow h-1" />
+                <DropdownMenuItem className="text-lg font-bold hover:bg-yellow hover:text-black hover:-translate-y-1 transition-transform">
+                  <User className="mr-2 h-5 w-5" />
+                  <span>Profil</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="text-lg font-bold hover:bg-yellow hover:text-black hover:-translate-y-1 transition-transform">
+                  <Settings className="mr-2 h-5 w-5" />
                   <span>Paramètres</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
+                <DropdownMenuSeparator className="bg-yellow h-1" />
+                <DropdownMenuItem className="text-lg font-bold hover:bg-yellow hover:text-black hover:-translate-y-1 transition-transform">
+                  <LogOut className="mr-2 h-5 w-5" />
                   <span>Déconnexion</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -113,34 +107,35 @@ export default function Navbar() {
           </div>
         </div>
 
+        {/* Section Aide */}
         {showHelp && (
-          <div className="mt-2 p-4 bg-yellow/10 backdrop-blur-md rounded-lg border border-yellow/30">
-            <h3 className="font-bold mb-2 text-white">
-              Comment utiliser cette page :
+          <div className="mt-4 p-6 bg-yellow border-[.15rem] border-black rounded-none">
+            <h3 className="font-extrabold text-2xl mb-4 text-black">
+              COMMENT UTILISER CETTE PAGE :
             </h3>
-            <ul className="space-y-2 text-blue/90 pl-5">
-              <li className="flex items-center gap-2">
-                <ZoomIn className="inline h-4 w-4 text-yellow flex-shrink-0" />
-                <ZoomOut className="inline h-4 w-4 text-yellow flex-shrink-0 ml-1" />
-                <span>Changer la taille du texte</span>
+            <ul className="space-y-3 text-black font-bold text-lg pl-5">
+              <li className="flex items-center gap-3">
+                <ZoomIn className="h-6 w-6 text-black" />
+                <ZoomOut className="h-6 w-6 text-black ml-1" />
+                <span>CHANGER LA TAILLE DU TEXTE</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Moon className="inline h-4 w-4 text-yellow flex-shrink-0" />
-                <Sun className="inline h-4 w-4 text-yellow flex-shrink-0 ml-1" />
-                <span>Changer entre le mode clair et sombre</span>
+              <li className="flex items-center gap-3">
+                <Moon className="h-6 w-6 text-black" />
+                <Sun className="h-6 w-6 text-black ml-1" />
+                <span>CLAIR / SOMBRE</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Volume2 className="inline h-4 w-4 text-yellow flex-shrink-0" />
-                <span>Activer la lecture vocale du contenu</span>
+              <li className="flex items-center gap-3">
+                <Volume2 className="h-6 w-6 text-black" />
+                <span>LECTURE VOCALE</span>
               </li>
             </ul>
-            <p className="mt-2 text-white">
-              Pour obtenir de l'aide, appelez le 01 23 45 67 89
+            <p className="mt-4 text-black font-bold text-lg">
+              AIDE : 01 23 45 67 89
             </p>
             <Button
-              className="mt-4 bg-yellow hover:bg-yellow/80 text-deep-navy font-bold"
+              className="mt-6 bg-black hover:bg-gray-800 text-yellow font-extrabold text-lg border-4 border-yellow hover:-translate-y-1 transition-transform"
               onClick={() => setShowHelp(false)}>
-              Fermer l'aide
+              FERMER
             </Button>
           </div>
         )}
