@@ -11,28 +11,28 @@ const fData = [
   {
     id: 1,
     icon: '/assets/images/icon-1.png',
-    img: '/assets/images/img-1.png',
+    img: '/assets/videos/vid1.webm',
     text: "Capture d'écran de l'application montrant la visite augmentée.",
     title: 'Galerie Interactive ',
   },
   {
     id: 2,
     icon: '/assets/images/icon-2.png',
-    img: '/assets/images/img-2.png',
+    img: '/assets/videos/vid2.webm',
     text: "Capture d'écran de l'application montrant la visite augmentée.",
     title: 'Galerie Interactive ',
   },
   {
     id: 2,
     icon: '/assets/images/icon-3.png',
-    img: '/assets/images/img-3.png',
+    img: '/assets/videos/vid3.webm',
     text: "Capture d'écran de l'application montrant la visite augmentée.",
     title: 'Galerie Interactive ',
   },
   {
     id: 2,
     icon: '/assets/images/icon-4.png',
-    img: '/assets/images/img-4.png',
+    img: '/assets/videos/vid4.webm',
     text: "Capture d'écran de l'application montrant la visite augmentée.",
     title: 'Galerie Interactive',
   },
@@ -194,10 +194,21 @@ const Gallery = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-32">
+          <div className="flex flex-col gap-52">
             {fData.map((data, i) => (
-              <div key={i + data.text} className="photocontainer">
-                <Image src={data.img} alt="image" height={1000} width={1000} />
+              <div key={i + data.text} className="photocontainer rounded-3xl overflow-hidden">
+                {/* <Image src={data.img} alt="image" height={1000} width={1000} /> */}
+                <video
+                  className="w-96 h-96 object-cover"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                >
+                  {/* <source src="/path/to/your/video.mp4" type="video/mp4" /> */}
+                  <source src={data.img} type="video/webm" />
+                  Votre navigateur ne supporte pas la balise vidéo.
+                </video>
               </div>
             ))}
           </div>

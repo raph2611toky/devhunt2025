@@ -11,17 +11,39 @@ import Lenis from 'lenis';
 import { useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
+import useSocket from '@/hooks/useSoket';
 
 export default function Home() {
+  const { isConnected, messages, sendMessage, onEvent } = useSocket(
+    'ws://192.168.0.103:8000/ws/chat/'
+  );
+
   useEffect(() => {
     const lenis = new Lenis();
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => {
       lenis.raf(time * 1000);
     });
-
     gsap.ticker.lagSmoothing(0);
+
+    
   }, []);
+
+  useEffect(()=>{
+    const mess = onEvent('message', (data) => {
+      console.log('Message received :', data);
+    });
+    return () => {
+      mess();
+    };
+  },[])
+
+  useEffect(()=>{
+    if(isConnected){
+      sendMessage('Bonjour....');
+    }
+  },[isConnected])
+
   return (
     <div className="w-full min-h-screen max-h-fit overflow-hidden bg-white text-black">
       <LandingHeader />
