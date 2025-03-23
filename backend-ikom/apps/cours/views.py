@@ -396,7 +396,6 @@ class CourseDetailAPIView(APIView):
 
 class FromVideoAPIView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = EtapeSerializer
     parser_classes = [MultiPartParser, FormParser]
 
     @swagger_auto_schema(
@@ -443,7 +442,6 @@ class FromVideoAPIView(APIView):
 
 class FromPdfAPIView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = EtapeSerializer
     parser_classes = [MultiPartParser, FormParser]
 
     @swagger_auto_schema(
