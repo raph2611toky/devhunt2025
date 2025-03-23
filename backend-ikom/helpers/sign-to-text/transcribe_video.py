@@ -123,13 +123,11 @@ class DynamicSignLanguageConverter:
         print(f"Gestes détectés : {len(text_output)}")
         return " ".join(text_output)
 
-def main():
+def translate(video_path="test.mp4"):
     converter = DynamicSignLanguageConverter(sequence_length=10)
-    video_path = "test.mp4"
+    video_path = video_path
     result = converter.video_to_text(video_path, output_path="output_video.mp4", frame_skip=5)
     if result:
-        print(f"Texte traduit : {result}")
+        return result
 
-if __name__ == "__main__":
-    main()
-    
+# translate()
