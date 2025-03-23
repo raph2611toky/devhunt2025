@@ -15,7 +15,7 @@ SECRET_KEY = "lrnEKgg|_a:(sY_{bEDgQ_hJqawQ;En:xx&,PBQ;u?o,KR'B-bh)_V,HkTmAS/-XD;
 
 DEBUG = True
 
-ALLOWED_HOSTS = [IP_ADDR, '127.0.0.1', 'localhost',"192.168.0.100","192.168.0.103"]
+ALLOWED_HOSTS = [IP_ADDR, '127.0.0.1', 'localhost',"192.168.0.100","192.168.0.103", "192.168.4.18"]
 
 LOCAL_APPS = [
     'apps.user.apps.UserConfig',

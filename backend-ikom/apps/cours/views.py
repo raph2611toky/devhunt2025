@@ -395,7 +395,7 @@ class CourseDetailAPIView(APIView):
             return Response({'erreur': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class FromVideoAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = EtapeSerializer
     parser_classes = [MultiPartParser, FormParser]
 
@@ -442,7 +442,7 @@ class FromVideoAPIView(APIView):
             return Response({"erreur": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class FromPdfAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     serializer_class = EtapeSerializer
     parser_classes = [MultiPartParser, FormParser]
 
