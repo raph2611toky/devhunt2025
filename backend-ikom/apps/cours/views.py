@@ -10,6 +10,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from helpers.video import video_to_subtitled_video
+from helpers.voice import text_to_speech
+from helpers.image_recognition import pdf_to_text
+from django.conf import settings
 from django.conf import settings
 from django.core.files import File
 import os, traceback
@@ -390,4 +393,99 @@ class CourseDetailAPIView(APIView):
             return Response({'erreur': 'Cours non trouvé'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'erreur': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class FromVideoAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EtapeSerializer
+    parser_classes = [MultiPartParser, FormParser]
+
+    @swagger_auto_schema(
+        operation_description="Traduction d'un fichier video en transcrivable",
+        manual_parameters=[
+            openapi.Parameter(
+                'video', openapi.IN_FORM, description="Fichier vidéo à téleverser", type=openapi.TYPE_FILE, required=False
+            ),
+        ],
+        tags=["Traduction"],
+        responses={
+            201: openapi.Response(
+                description="Fichier video transcrit",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'video_url': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'video_content':openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Données invalides",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'erreur': openapi.Schema(type=openapi.TYPE_STRING, example="Données incorrectes"),
+                    },
+                ),
+            ),
+        },
+    )
+    def post(self, request):
+        try:
+            video_path = os.path.join(settings.BASE_DIR, request.FILES['video'])
+            video_path_output = os.path.join(settings.BASE_DIR, "/media/traductions/videos/"+video_path)
+            print(video_path_output)
+
+            output_video_path, video_content = video_to_subtitled_video(video_path, output_video_path=video_path_output)
+            video_url = os.path.join(settings.BASE_URL, output_video_path)
+            return Response({"video_url":video_url, "video_content":video_content}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"erreur": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class FromPdfAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = EtapeSerializer
+    parser_classes = [MultiPartParser, FormParser]
+
+    @swagger_auto_schema(
+        operation_description="Traduction d'un fichier pdf en audio",
+        manual_parameters=[
+            openapi.Parameter(
+                'pdf', openapi.IN_FORM, description="Fichier vidéo à téleverser", type=openapi.TYPE_FILE, required=False
+            ),
+        ],
+        tags=["Traduction"],
+        responses={
+            201: openapi.Response(
+                description="Fichier video transcrit",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'audio_url': openapi.Schema(type=openapi.TYPE_INTEGER),
+                        'text_content':openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Données invalides",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'erreur': openapi.Schema(type=openapi.TYPE_STRING, example="Données incorrectes"),
+                    },
+                ),
+            ),
+        },
+    )
+    def post(self, request):
+        try:
+            pdf_path = os.path.join(settings.BASE_DIR, request.FILES['pdf'])
+            pdf_path_output = os.path.join(settings.BASE_DIR, "/media/traductions/videos/"+pdf_path)
+            print(pdf_path_output)
+
+            pdf_content = pdf_to_text(pdf_path_output)
+            pdf_audio = text_to_speech(pdf_content)
+            audio_url = os.path.join(settings.BASE_URL, pdf_audio)
+            return Response({"audio_url":audio_url, "text_content":pdf_content}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"erreur": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

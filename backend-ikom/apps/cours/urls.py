@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.cours.views import CourseCreateAPIView, EtapeCreateAPIView, EtapeListAPIView, InterrogationCreateAPIView, InterrogationListAPIView, CoursePublishAPIView,\
-     CourseListAPIView, CourseDetailAPIView
+     CourseListAPIView, CourseDetailAPIView, FromVideoAPIView, FromPdfAPIView
 
 
 urlpatterns = [
@@ -14,6 +14,8 @@ urlpatterns = [
     path('cours/publier/', CoursePublishAPIView.as_view(), name='cours-publier'),
     path('cours/list/', CourseListAPIView.as_view(), name="list all courses"),
     path('cours/details/<int:id_cours>/', CourseDetailAPIView.as_view(), name="cours details"),
+    path('traductions/from-video/', FromVideoAPIView.as_view(), name="traduction from video"),
+    path('traductions/from-pdf/', FromPdfAPIView.as_view(), name='traduction from pdf'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

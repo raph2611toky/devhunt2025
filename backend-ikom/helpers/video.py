@@ -5,6 +5,7 @@ import numpy as np
 from pydub import AudioSegment
 import traceback
 import sys
+import ffmpeg
 
 sys.stdout.reconfigure(encoding='utf-8')
 
@@ -75,7 +76,7 @@ def add_subtitles_to_video(video_path, segments, output_video_path="output_with_
                     break
             if subtitle_text:
                 font = cv2.FONT_HERSHEY_SIMPLEX
-                font_scale = 0.25
+                font_scale = 0.35
                 font_thickness = 1
                 max_width = width - 40
 
@@ -135,4 +136,5 @@ def video_to_subtitled_video(video_path, output_video_path="../media/output_with
     except Exception as e:
         print(f"Erreur générale : {str(e)}")
         print(traceback.format_exc())
-        
+
+
