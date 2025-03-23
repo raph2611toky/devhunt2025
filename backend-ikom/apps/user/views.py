@@ -6,7 +6,7 @@ from rest_framework.request import Request
 from rest_framework.views import APIView
 from django.contrib.auth.models import update_last_login
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files import File
 from django.conf import settings
 
@@ -231,7 +231,7 @@ class RegisterView(APIView):
 class RegisterFaceView(APIView):
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
-    parser_classes = [MultiPartParser]
+    parser_classes = [MultiPartParser, FormParser]
     
     def check_if_user_exist(self, email):
         return User.objects.filter(email=email).exists()
@@ -245,12 +245,12 @@ class RegisterFaceView(APIView):
             if any(file not in files.keys() for file in required_files):
                 return False, "Missing required files: cin_image, face_image"
             email = data['email']
-            if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-                return False, "Invalid email format"
-            if 'handicap_type' in data:
-                valid_handicap_types = [choice[0] for choice in User.HANDICAP_TYPE]
-                if data['handicap_type'] not in valid_handicap_types:
-                    return False, f"Invalid handicap_type. Must be one of: {valid_handicap_types}"
+            # if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            #     return False, "Invalid email format"
+            # if 'handicap_type' in data:
+            #     valid_handicap_types = [choice[0] for choice in User.HANDICAP_TYPE]
+            #     if data['handicap_type'] not in valid_handicap_types:
+            #         return False, f"Invalid handicap_type. Must be one of: {valid_handicap_types}"
             return True, ""
         except Exception as e:
             return False, str(e)
@@ -354,12 +354,13 @@ class RegisterFaceView(APIView):
         }
     )
     def post(self, request):
+        print(request.data)
         try:
             is_valid, error_msg = self.validate_data(request.data, request.FILES)
             if not is_valid:
                 return Response({'erreur': error_msg}, status=status.HTTP_400_BAD_REQUEST)
-            
-            if self.check_if_user_exist(request.data['email']):
+            email = request.data['email'] if not isinstance(request.data['email'], list) else request.data['email'][0]
+            if self.check_if_user_exist(email):
                 return Response({'erreur': 'email existant'}, status=status.HTTP_400_BAD_REQUEST)
 
             cin_data, cin_path, cin_error = self.process_cin_image(request.FILES['cin_image'])
@@ -409,7 +410,7 @@ class RegisterFaceView(APIView):
 class LoginFaceView(APIView):
     permission_classes = [AllowAny]
     serializer_class = LoginSerializer
-    parser_classes = [MultiPartParser]
+    parser_classes = [MultiPartParser, FormParser]
     
     def process_face_image(self, face_image, temp_directory="media/temp"):
         temp_path = None
@@ -442,9 +443,11 @@ class LoginFaceView(APIView):
             users = User.objects.filter(user_type="HANDICAP")
             threshold = 0.5  # Seuil de similarité pour la reconnaissance faciale
             for user in users:
+                print(user)
                 if not user.profile or not os.path.exists(user.profile.path):
                     continue
                 match, distance = compare_faces(user.profile.path, face_image_path, threshold)
+                print(match, distance)
                 if match:
                     return user, distance
             return None, "Visage non reconnu"
@@ -490,6 +493,7 @@ class LoginFaceView(APIView):
         },
     )
     def post(self, request):
+        print(request.data)
         saved_face_path = None
         try:
             if 'face_image' not in request.FILES:

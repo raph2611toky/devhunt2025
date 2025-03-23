@@ -1,3 +1,4 @@
+# helpers/ia_navigation.py
 import ollama
 import lancedb
 import numpy as np
@@ -5,6 +6,7 @@ from sentence_transformers import SentenceTransformer
 import os
 import queue
 import pyarrow as pa
+import asyncio
 
 embedder = SentenceTransformer('all-MiniLM-L6-v2')
 texte_queue = queue.Queue()
@@ -32,12 +34,15 @@ def generer_texte(texte_entree, modele="mistral", max_tokens=100, temperature=0.
     except Exception as e:
         return f"Erreur lors de la génération : {str(e)}"
 
-def generer_texte_stream(texte_entree, modele="mistral"):
+async def generer_texte_stream_websocket(texte_entree, modele="mistral", send_callback=None):
     stream = ollama.generate(model=modele, prompt=texte_entree, stream=True)
     resultat = ""
     for chunk in stream:
-        resultat += chunk['response']
-        print(chunk['response'], end='', flush=True)
+        morceau = chunk['response']
+        resultat += morceau
+        if send_callback:
+            await send_callback(morceau)  # Envoyer chaque morceau via le callback
+        await asyncio.sleep(0.01)  # Petite pause pour éviter de surcharger
     return resultat
 
 def ajouter_document(fichier_path):
@@ -54,7 +59,7 @@ def recuperer_contexte(query, top_k=3):
     result = table.search(query_embedding).limit(top_k).to_list()
     return [doc["text"] for doc in result]
 
-def generer_texte_avec_contexte(texte_entree, modele="mistral", max_tokens=150, temperature=0.7):
+async def generer_texte_avec_contexte_websocket(texte_entree, modele="mistral", max_tokens=150, temperature=0.7, send_callback=None):
     contexte = recuperer_contexte(texte_entree)
     contexte_texte = "\n".join(contexte) if contexte else "Aucun contexte disponible."
     
@@ -74,6 +79,8 @@ def generer_texte_avec_contexte(texte_entree, modele="mistral", max_tokens=150, 
     for chunk in stream:
         morceau = chunk['response']
         resultat += morceau
-        print(morceau, end='', flush=True)
+        if send_callback:
+            await send_callback(morceau)
+        await asyncio.sleep(0.008)
     
     return resultat.strip()
