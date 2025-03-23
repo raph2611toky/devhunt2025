@@ -12,7 +12,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from helpers.video import video_to_subtitled_video
 from django.conf import settings
 from django.core.files import File
-import os
+import os, traceback
 
 class CourseCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -28,16 +28,23 @@ class CourseCreateAPIView(APIView):
         operation_summary="Ajout d'un cours",
     )
     def post(self, request):
-        serializer = CourseSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            course = serializer.save()
-            return Response(CourseSerializer(course).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            print(request.data)
+            data_request = request.data
+            data_request["status"]  = "Pend"
+            serializer = CourseSerializer(data=data_request, context={'request': request})
+            if serializer.is_valid():
+                course = serializer.save()
+                return Response(CourseSerializer(course).data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(traceback)
+            return Response({"erreur":str(e)}, status=400)
 
 class EtapeCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
     serializer_class = EtapeSerializer
-    parser_classes = [MultiPartParser, FormParser] 
+    parser_classes = [MultiPartParser, FormParser]
 
     @swagger_auto_schema(
         operation_description="Création d'une étape de cours avec upload de fichiers (PDF et vidéo)",
@@ -85,13 +92,17 @@ class EtapeCreateAPIView(APIView):
     def post(self, request):
         try:
             etape_data = request.data
+            cours = Course.objects.get(id=etape_data["cours"])
+            etape_data["ordre"] = cours.etapes.all().count() + 1
             serializer = self.serializer_class(data=etape_data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()                
                 etape_new = serializer.save()
                 video_path = os.path.join(settings.BASE_DIR, etape_new.video.path)
+                video_path_output = os.path.join(settings.BASE_DIR, "/media/courses/videos/"+etape_new.video.name)
+                print(video_path_output)
 
-                output_video_path, video_content = video_to_subtitled_video(video_path, output_video_path=video_path)
+                output_video_path, video_content = video_to_subtitled_video(video_path, output_video_path=video_path_output)
 
                 if output_video_path and os.path.exists(output_video_path):
                     with open(output_video_path, 'rb') as video_file:
