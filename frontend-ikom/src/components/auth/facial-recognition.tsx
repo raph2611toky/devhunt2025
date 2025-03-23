@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { Camera, Check, X } from 'lucide-react';
-import Image from 'next/image';
-import { login } from '@/lib/services/auth/auth';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Camera, Check, X } from "lucide-react";
+import Image from "next/image";
+import { login, register } from "@/lib/services/auth/auth";
+import axios from "axios";
 
 interface FacialRecognitionProps {
   onComplete: (success: boolean) => void;
-  type: 'login' | 'register';
+  type: "login" | "register";
   setCinImage?: Dispatch<SetStateAction<string | File | null | undefined>>;
   cinImage?: File | string | null;
 }
@@ -33,7 +34,7 @@ export default function FacialRecognition({
     const startCamera = async () => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
+          video: { facingMode: "user" },
         });
 
         if (videoRef.current) {
@@ -82,7 +83,7 @@ export default function FacialRecognition({
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
+      const context = canvas.getContext("2d");
 
       if (context) {
         canvas.width = video.videoWidth;
@@ -90,7 +91,7 @@ export default function FacialRecognition({
 
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageData = canvas.toDataURL('image/jpeg');
+        const imageData = canvas.toDataURL("image/jpeg");
         setCapturedImage(imageData);
         if (setCinImage) setCinImage(imageData);
         setScanComplete(true);
@@ -101,7 +102,7 @@ export default function FacialRecognition({
   };
 
   const dataURLtoBlob = (dataURL: string) => {
-    const arr = dataURL.split(',');
+    const arr = dataURL.split(",");
     const mime = arr[0].match(/:(.*?);/)![1];
     const bstr = atob(arr[1]);
     let n = bstr.length;
@@ -118,39 +119,42 @@ export default function FacialRecognition({
     try {
       const imageBlob = dataURLtoBlob(imageData);
       const formData = new FormData();
-      formData.append('face_image', imageBlob, 'captured-image.jpg');
-      formData.append('email', 'exemple@gmail.com');
+      formData.append("face_image", imageBlob, "captured-image.jpg");
+      formData.append("email", "exemple@gmail.com");
 
-      if (type === 'login') {
-        console.log('Loginnn...');
-        const response = await fetch(
-          process.env.NEXT_PUBLIC_API_URL + '/login/face/',
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
-        const result = await response.json();
+      if (type === "login") {
+        console.log("Loginnn...");
+        await axios
+          .post(`${process.env.NEXT_PUBLIC_API_URL}/login/face/`, formData, {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       } else {
         if (cinImage) {
-          if (typeof cinImage === 'string') {
+          if (typeof cinImage === "string") {
             const cinImageBlob = dataURLtoBlob(cinImage);
-            formData.append('cin_image', cinImageBlob, 'cin-image.jpg');
+            formData.append("cin_image", cinImageBlob, "cin-image.jpg");
+            console.log(cinImageBlob);
           } else if (cinImage instanceof File) {
-            formData.append('cin_image', cinImage);
+            formData.append("cin_image", cinImage);
           }
         } else {
-          throw new Error('Aucune image CIN fournie');
+          throw new Error("Aucune image CIN fournie");
         }
-        console.log('Registerrr...');
-        const response = await fetch(
-          process.env.NEXT_PUBLIC_API_URL + '/register/face/',
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
-        const result = await response.json();
+        console.log(imageBlob);
+        console.log("Registerrr...");
+
+        const response = await register(formData);
+
+        console.log(response);
       }
 
       const isValid = Math.random() > 0.3;
@@ -164,7 +168,7 @@ export default function FacialRecognition({
         onComplete(false); // Échec
       }
     } catch (error) {
-      console.error('Erreur lors de la vérification :', error);
+      console.error("Erreur lors de la vérification :", error);
       setIsLoading(false);
       setScanSuccess(false);
       onComplete(false);
@@ -190,14 +194,13 @@ export default function FacialRecognition({
               <div
                 className={`w-48 h-64 border-2 rounded-full transition-colors duration-300 ${
                   scanComplete && scanSuccess === null
-                    ? 'border-violet'
+                    ? "border-violet"
                     : scanSuccess
-                    ? 'border-green'
+                    ? "border-green"
                     : scanSuccess === false
-                    ? 'border-red'
-                    : 'border-violet'
-                }`}
-              ></div>
+                    ? "border-red"
+                    : "border-violet"
+                }`}></div>
             </div>
 
             {/* Animation de balayage */}
@@ -207,9 +210,8 @@ export default function FacialRecognition({
                   className="absolute top-0 left-0 w-full h-1 bg-violet opacity-70"
                   style={{
                     transform: `translateY(${Math.floor(scanProgress * 3)}px)`,
-                    transition: 'transform 0.1s linear',
-                  }}
-                ></div>
+                    transition: "transform 0.1s linear",
+                  }}></div>
               </div>
             )}
           </>
@@ -225,7 +227,7 @@ export default function FacialRecognition({
             {isLoading && (
               <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <Image
-                  src={'/assets/icons/bars-rotate-fade.svg'}
+                  src={"/assets/icons/bars-rotate-fade.svg"}
                   width={100}
                   height={100}
                   className="w-[3rem]"
@@ -265,12 +267,12 @@ export default function FacialRecognition({
           <div
             className={`h-full ${
               scanComplete && scanSuccess === null
-                ? 'bg-violet'
+                ? "bg-violet"
                 : scanSuccess
-                ? 'bg-green'
+                ? "bg-green"
                 : scanSuccess === false
-                ? 'bg-red'
-                : 'bg-violet'
+                ? "bg-red"
+                : "bg-violet"
             }`}
             style={{ width: `${scanProgress}%` }}
           />
@@ -281,8 +283,7 @@ export default function FacialRecognition({
       {cameraActive && !scanStarted && (
         <button
           onClick={startScan}
-          className="w-full h-12 bg-violet hover:bg-violet/90 text-soft-black font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1"
-        >
+          className="w-full h-12 bg-violet hover:bg-violet/90 text-soft-black font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1">
           Lancer le scan
         </button>
       )}
@@ -293,8 +294,7 @@ export default function FacialRecognition({
           onClick={() => {
             window.location.reload();
           }}
-          className="w-full bg-yellow h-12 bg-red hover:bg-red/90 text-red-500 font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1"
-        >
+          className="w-full bg-yellow h-12 bg-red hover:bg-red/90 text-red-500 font-bold border-2 border-soft-black rounded-md transition-transform hover:-translate-y-1">
           Recommencer
         </button>
       )}
@@ -304,14 +304,14 @@ export default function FacialRecognition({
         <div className="flex justify-between text-xs text-grey">
           <span>
             {isLoading
-              ? 'Vérification en cours...'
+              ? "Vérification en cours..."
               : scanComplete && scanSuccess === null
-              ? 'Scan terminé'
+              ? "Scan terminé"
               : scanSuccess
-              ? 'Visage vérifié'
+              ? "Visage vérifié"
               : scanSuccess === false
-              ? 'Échec de la vérification'
-              : 'Scan en cours...'}
+              ? "Échec de la vérification"
+              : "Scan en cours..."}
           </span>
           <span>{scanProgress}%</span>
         </div>

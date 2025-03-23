@@ -1,21 +1,14 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = "http://192.168.0.103:8000/api";
 
-export const register = async (
-  email: string,
-  mobile: string,
-  password: string,
-  name: string,
-  localisation_id: string
-) => {
+export const register = async (formData: FormData) => {
   try {
-    const res = await axios.post(`${API_URL}register`, {
-      email,
-      mobile,
-      password,
-      name,
-      localisation_id,
+    const res = await axios.post(`${API_URL}/register/face/`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     return res;
   } catch (error) {
@@ -24,20 +17,16 @@ export const register = async (
   }
 };
 
-export const login = async (formeData: unknown) => {
+export const login = async (formData: FormData) => {
+  console.log("Début de login", new Date().toISOString());
   try {
-    const res = await axios.post(
-      `${API_URL}/login/`,
-      {
-        formeData,
+    const res = await axios.post(`${API_URL}/login/face/`, formData, {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "multipart/form-data",
       },
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
+    });
+    console.log("Fin de login", res.data);
     document.cookie = `user=${res?.data}; path=/`;
     return res.data;
   } catch (error) {
